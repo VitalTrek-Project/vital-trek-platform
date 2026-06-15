@@ -11,8 +11,9 @@ using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Repositories;
 namespace NexumDevs.VitalTrek.Platform.TourManagement.Application.Internal.CommandServices;
 
 /// <summary>
-/// Implementación de los casos de uso (comandos) del BC TourManagement.
-/// Equivalente a "CategoryCommandService" / "TutorialCommandService".
+/// Command service responsible for handling tour management use cases,
+/// including creating, updating, deleting, duplicating tours,
+/// and assigning or unassigning tourists.
 /// </summary>
 public class TourCommandService : ITourCommandService
 {
@@ -21,6 +22,13 @@ public class TourCommandService : ITourCommandService
     private readonly IUnitOfWork _unitOfWork;
     private readonly IStringLocalizer _localizer;
 
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TourCommandService"/> class.
+    /// </summary>
+    /// <param name="tourRepository">Repository used to manage tours.</param>
+    /// <param name="assignmentRepository">Repository used to manage tour assignments.</param>
+    /// <param name="unitOfWork">Unit of Work used to persist changes.</param>
+    /// <param name="localizer">Localizer used for localized error messages.</param>
     public TourCommandService(
         ITourRepository tourRepository,
         ITourAssignmentRepository assignmentRepository,
@@ -33,6 +41,15 @@ public class TourCommandService : ITourCommandService
         _localizer = localizer;
     }
 
+    /// <summary>
+    /// Creates a new tour.
+    /// </summary>
+    /// <param name="command">The command containing the information required to create the tour.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>The newly created <see cref="Tour"/>.</returns>
+    /// <exception cref="TourManagementError">
+    /// Thrown when a tour with the same title already exists for the specified agency.
+    /// </exception>
     public async Task<Tour> Handle(CreateTourCommand command, CancellationToken cancellationToken)
     {
         var alreadyExists = await _tourRepository.ExistsByTitleAsync(command.Title, command.AgencyId, cancellationToken);
@@ -49,6 +66,15 @@ public class TourCommandService : ITourCommandService
         return tour;
     }
 
+    /// <summary>
+    /// Updates an existing tour.
+    /// </summary>
+    /// <param name="command">The command containing the updated tour information.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>The updated <see cref="Tour"/>.</returns>
+    /// <exception cref="TourManagementError">
+    /// Thrown when the specified tour cannot be found.
+    /// </exception>
     public async Task<Tour> Handle(UpdateTourCommand command, CancellationToken cancellationToken)
     {
         var tour = await _tourRepository.FindByIdAsync(command.TourId, cancellationToken);
@@ -63,6 +89,15 @@ public class TourCommandService : ITourCommandService
         return tour;
     }
 
+    /// <summary>
+    /// Deletes an existing tour.
+    /// </summary>
+    /// <param name="command">The command containing the identifier of the tour to delete.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="TourManagementError">
+    /// Thrown when the specified tour cannot be found.
+    /// </exception>
     public async Task Handle(DeleteTourCommand command, CancellationToken cancellationToken)
     {
         var tour = await _tourRepository.FindByIdAsync(command.TourId, cancellationToken);
@@ -73,6 +108,15 @@ public class TourCommandService : ITourCommandService
         await _unitOfWork.CompleteAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Creates a duplicate of an existing tour.
+    /// </summary>
+    /// <param name="command">The command containing the identifier of the tour to duplicate.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>The duplicated <see cref="Tour"/>.</returns>
+    /// <exception cref="TourManagementError">
+    /// Thrown when the specified tour cannot be found.
+    /// </exception>
     public async Task<Tour> Handle(DuplicateTourCommand command, CancellationToken cancellationToken)
     {
         var tour = await _tourRepository.FindByIdAsync(command.TourId, cancellationToken);
@@ -87,6 +131,15 @@ public class TourCommandService : ITourCommandService
         return duplicated;
     }
 
+    /// <summary>
+    /// Assigns a tourist to a tour.
+    /// </summary>
+    /// <param name="command">The command containing the tour and tourist identifiers.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>The created <see cref="TourAssignment"/>.</returns>
+    /// <exception cref="TourManagementError">
+    /// Thrown when the specified tour cannot be found or when the tourist is already assigned to the tour.
+    /// </exception>
     public async Task<TourAssignment> Handle(AssignTouristCommand command, CancellationToken cancellationToken)
     {
         var tour = await _tourRepository.FindByIdAsync(command.TourId, cancellationToken);
@@ -107,6 +160,15 @@ public class TourCommandService : ITourCommandService
         return assignment;
     }
 
+    /// <summary>
+    /// Removes a tourist assignment from a tour.
+    /// </summary>
+    /// <param name="command">The command containing the tour and tourist identifiers.</param>
+    /// <param name="cancellationToken">A token used to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    /// <exception cref="TourManagementError">
+    /// Thrown when the specified tour cannot be found.
+    /// </exception>
     public async Task Handle(UnassignTouristCommand command, CancellationToken cancellationToken)
     {
         var tour = await _tourRepository.FindByIdAsync(command.TourId, cancellationToken);
