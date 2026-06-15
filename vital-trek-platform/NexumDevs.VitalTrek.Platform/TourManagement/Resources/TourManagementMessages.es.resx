@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+    <data name="TourNotFound" xml:space="preserve">
+    <value>No se encontró el tour solicitado.</value>
+  </data>
+    <data name="TourTitleAlreadyExists" xml:space="preserve">
+    <value>Ya existe un tour con este título para esta agencia.</value>
+  </data>
+    <data name="InvalidTourCapacity" xml:space="preserve">
+    <value>La capacidad del tour debe ser mayor a cero.</value>
+  </data>
+    <data name="TourCannotBeUpdated" xml:space="preserve">
+    <value>No se puede actualizar un tour cancelado.</value>
+  </data>
+    <data name="TourCannotBePublished" xml:space="preserve">
+    <value>Solo un tour en borrador puede publicarse.</value>
+  </data>
+    <data name="TourCannotBeClosed" xml:space="preserve">
+    <value>Solo un tour disponible puede cerrarse.</value>
+  </data>
+    <data name="TourAlreadyCancelled" xml:space="preserve">
+    <value>El tour ya está cancelado.</value>
+  </data>
+    <data name="TourNotAvailableForAssignment" xml:space="preserve">
+    <value>Solo se pueden asignar turistas a un tour disponible.</value>
+  </data>
+    <data name="TourCapacityExceeded" xml:space="preserve">
+    <value>El tour ha alcanzado su capacidad máxima.</value>
+  </data>
+    <data name="TouristAlreadyAssigned" xml:space="preserve">
+    <value>Este turista ya está asignado a este tour.</value>
+  </data>
+    <data name="AssignmentNotFound" xml:space="preserve">
+    <value>El turista no está asignado a este tour.</value>
+  </data>
+    <data name="AssignmentAlreadyCancelled" xml:space="preserve">
+    <value>Esta asignación ya está cancelada.</value>
+  </data>
+</root>
