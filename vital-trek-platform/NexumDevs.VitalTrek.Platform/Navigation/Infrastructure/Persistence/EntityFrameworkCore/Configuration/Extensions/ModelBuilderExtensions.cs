@@ -21,7 +21,7 @@ public static class ModelBuilderExtensions
         builder.Entity<Experience>().Property(t => t.ExpeditionID).IsRequired();
         builder.Entity<Experience>().Property(t => t.TouristID).IsRequired();
         builder.Entity<Experience>().Property(t => t.Note).IsRequired();
-        builder.Entity<Experience>().Property(t => t.MediaURL).IsRequired();
+        builder.Entity<Experience>().Property(t => t.MediaUrl).IsRequired();
         builder.Entity<Experience>().Property(t => t.CreatedAt).IsRequired();
         
         builder.Entity<Progress>().HasKey(t => t.Id);
