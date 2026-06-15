@@ -4,26 +4,19 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
 
 public partial class Progress
 {
-    public Progress(
-        int completedCheckpoints,
-        int totalCheckpoints,
-        double percentage
-    ) : this()
+    public Progress()
     {
-        CompletedCheckpoints = completedCheckpoints;
-        TotalCheckpoints = totalCheckpoints;
-        Percentage = percentage;
+        CompletedCheckpoints = 0;
+        TotalCheckpoints = 0;
+        Percentage = 0.0;
     }
 
-    public Progress(CreateProgressCommand command) : this(
-        command.completedCheckpoints, command.totalCheckpoints, command.percentage)
+    public Progress(CreateProgressCommand command)
     {
-        
-    }
-
-    private Progress()
-    {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(command);
+        CompletedCheckpoints = command.CompletedCheckpoints;
+        TotalCheckpoints = command.TotalCheckpoints;
+        Percentage = command.Percentage;
     }
     
     public int Id { get; }

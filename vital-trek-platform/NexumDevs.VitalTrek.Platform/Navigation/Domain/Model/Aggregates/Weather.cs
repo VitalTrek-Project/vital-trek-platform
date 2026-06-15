@@ -4,28 +4,21 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
 
 public class Weather
 {
-    public Weather(
-        double temperatureCelsius,
-        string condition,
-        double humidity,
-        double windSpeedKmh
-    ) : this()
+    public Weather()
     {
-        TemperatureCelsius = temperatureCelsius;
-        Condition = condition;
-        Humidity = humidity;
-        WindSpeedKmh = windSpeedKmh;
+        TemperatureCelsius = 0.0;
+        Condition = null!;
+        Humidity = 0.0;
+        WindSpeedKmh = 0.0;
     }
-
-    public Weather(CreateWeatherCommand command) : this(
-        command.temperatureCelsius, command.condition, command.humidity, command.windSpeedKmh)
+    
+    public Weather(CreateWeatherCommand command)
     {
-        
-    }
-
-    private Weather()
-    {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(command);
+        TemperatureCelsius = command.TemperatureCelsius;
+        Condition = command.Condition;
+        Humidity = command.Humidity;
+        WindSpeedKmh = command.WindSpeedKmh;
     }
     
     public int Id { get; }

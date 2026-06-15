@@ -5,30 +5,23 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
 
 public partial class Experience
 {
-    public Experience(
-        ExpeditionId expeditionId,
-        TouristId touristId,
-        NoteItem note,
-        string mediaURL,
-        string createdAt
-    ) : this()
+    public Experience()
     {
-        ExpeditionID = expeditionId;
-        TouristID = touristId;
-        Note = note;
-        MediaURL = mediaURL;
-        CreatedAt = createdAt;
-    }
-    
-    public Experience(CreateExperienceCommand command) : this(
-        command.expeditionId, command.touristId, command.note, command.mediaURL, command.createdAt)
-    {
-        
+        ExpeditionID = null!;
+        TouristID = null!;
+        Note = null!;
+        MediaUrl = null!;
+        CreatedAt = null!;
     }
 
-    private Experience()
+    public Experience(CreateExperienceCommand command)
     {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(command);
+        ExpeditionID = command.ExpeditionID;
+        TouristID = command.TouristID;
+        Note = command.Note;
+        MediaUrl = command.MediaUrl;
+        CreatedAt = command.CreatedAt;
     }
     
     public int Id { get; }
@@ -36,6 +29,6 @@ public partial class Experience
     public ExpeditionId  ExpeditionID { get; private set; }
     public TouristId TouristID { get; private set; }
     public NoteItem Note { get; private set; }
-    public string MediaURL { get; private set; }
+    public string MediaUrl { get; private set; }
     public string CreatedAt { get; private set; }
 }

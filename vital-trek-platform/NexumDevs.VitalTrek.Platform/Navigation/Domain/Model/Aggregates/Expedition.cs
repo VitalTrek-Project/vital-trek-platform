@@ -5,30 +5,23 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
 
 public partial class Expedition
 {
-    public Expedition(
-        TourId tourId,
-        GuideId guideId,
-        string status,
-        string startedAt,
-        string finishedAt
-        ) : this()
+    public Expedition()
     {
-        TourID = tourId;
-        GuideID = guideId;
-        Status = status;
-        StartedAt = startedAt;
-        FinishedAt = finishedAt;
+        TourID = null!;
+        GuideID = null!;
+        Status = null!;
+        StartedAt = null!;
+        FinishedAt = null!;
     }
 
-    public Expedition(CreateExpeditionCommand command) : this(
-        command.tourId, command.guideId, command.status, command.startedAt, command.finishedAt)
+    public Expedition(CreateExpeditionCommand command)
     {
-        
-    }
-
-    private Expedition()
-    {
-        throw new NotImplementedException();
+        ArgumentNullException.ThrowIfNull(command);
+        TourID = command.TourID;
+        GuideID = command.GuideID;
+        Status = command.Status;
+        StartedAt = command.StartedAt;
+        FinishedAt = command.FinishedAt;
     }
     
     public int Id { get; }
