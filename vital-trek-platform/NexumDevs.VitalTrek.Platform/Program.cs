@@ -12,6 +12,11 @@ using Cortex.Mediator.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
+using NexumDevs.VitalTrek.Platform.Navigation.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Domain.Repositories;
 // Added for ProblemDetailsFactory
 // Added for base ProblemDetailsFactory
 // Added for IamMessages
@@ -114,7 +119,22 @@ builder.Services.AddSwaggerGen(options =>
 // Shared Bounded Context
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+// Navigation Bounded Context
+builder.Services.AddScoped<IExpeditionRepository, ExpeditionRepository>();
+builder.Services.AddScoped<IExpeditionCommandService, ExpeditionCommandService>();
+builder.Services.AddScoped<IExpeditionQueryService, ExpeditionQueryService>();
 
+builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
+builder.Services.AddScoped<IExperienceCommandService, ExperienceCommandService>();
+builder.Services.AddScoped<IExperienceQueryService, ExperienceQueryService>();
+
+builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
+builder.Services.AddScoped<IProgressCommandService, ProgressCommandService>();
+builder.Services.AddScoped<IProgressQueryService, ProgressQueryService>();
+
+builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+builder.Services.AddScoped<IWeatherCommandService, WeatherCommandService>();
+builder.Services.AddScoped<IWeatherQueryService, WeatherQueryService>();
 
 // TokenSettings Configuration
 
