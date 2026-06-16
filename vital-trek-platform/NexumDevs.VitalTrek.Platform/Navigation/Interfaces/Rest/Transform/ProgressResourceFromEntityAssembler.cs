@@ -5,7 +5,7 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Interfaces.Rest;
 
 public class ProgressResourceFromEntityAssembler
 {
-    public static ProgressResource ToResource(Progress entity)
+    public static ProgressResource ToResourceFromEntity(Progress entity)
     {
         if (entity == null)
             throw new ArgumentNullException(nameof(entity),
