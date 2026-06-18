@@ -4,6 +4,7 @@ public enum MonitoringError
 {
     None,
     IncidentNotFound,
+    AlertNotFound,
     OperationCancelled,
     DatabaseError,
     InternalServerError

@@ -3,7 +3,9 @@ using NexumDevs.VitalTrek.Platform.Monitoring.Application.Internal.CommandServic
 using NexumDevs.VitalTrek.Platform.Monitoring.Application.Internal.QueryServices;
 using NexumDevs.VitalTrek.Platform.Monitoring.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Services;
 using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Services;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Resources.Shared;
 using NexumDevs.VitalTrek.Platform.Shared.Domain.Repositories;
@@ -123,6 +125,16 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
 builder.Services.AddScoped<IIncidentCommandService, IncidentCommandService>();
 builder.Services.AddScoped<IIncidentQueryService, IncidentQueryService>();
+builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+builder.Services.AddScoped<IAlertCommandService, AlertCommandService>();
+builder.Services.AddScoped<IAlertQueryService, AlertQueryService>();
+builder.Services.AddScoped<ILocationReadingRepository, LocationReadingRepository>();
+builder.Services.AddScoped<IVitalSignReadingRepository, VitalSignReadingRepository>();
+builder.Services.AddScoped<ILocationReadingCommandService, LocationReadingCommandService>();
+builder.Services.AddScoped<ILocationReadingQueryService, LocationReadingQueryService>();
+builder.Services.AddScoped<IVitalSignReadingCommandService, VitalSignReadingCommandService>();
+builder.Services.AddScoped<IVitalSignReadingQueryService, VitalSignReadingQueryService>();
+builder.Services.AddScoped<IAnomalyDetectionService, ThresholdAnomalyDetectionService>();
 
 
 
