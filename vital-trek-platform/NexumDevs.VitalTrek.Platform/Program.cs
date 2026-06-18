@@ -1,4 +1,11 @@
 
+using NexumDevs.VitalTrek.Platform.Engagement.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Engagement.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Engagement.Resources;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Resources.Shared;
 using NexumDevs.VitalTrek.Platform.Shared.Domain.Repositories;
@@ -12,10 +19,6 @@ using Cortex.Mediator.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.OpenApi;
-// Added for ProblemDetailsFactory
-// Added for base ProblemDetailsFactory
-// Added for IamMessages
-// Added for ProfilesMessages
 using ProblemDetailsFactory = NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -114,7 +117,13 @@ builder.Services.AddSwaggerGen(options =>
 // Shared Bounded Context
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-
+// Engagement Bounded Context
+builder.Services.AddScoped<IGamificationProfileRepository, GamificationProfileRepository>();
+builder.Services.AddScoped<IStringLocalizer>(sp =>
+    sp.GetRequiredService<IStringLocalizer<EngagementMessages>>());
+builder.Services.AddSingleton<IStringLocalizer<EngagementMessages>, StringLocalizer<EngagementMessages>>();
+builder.Services.AddScoped<IEngagementCommandService, EngagementCommandService>();
+builder.Services.AddScoped<IEngagementQueryService, EngagementQueryService>();
 
 // TokenSettings Configuration
 

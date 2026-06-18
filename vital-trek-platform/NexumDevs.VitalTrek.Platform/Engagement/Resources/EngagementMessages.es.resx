@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="InvalidPoints" xml:space="preserve">
+    <value>Los puntos deben ser mayores a cero.</value>
+  </data>
+  <data name="ExpeditionAlreadyAwarded" xml:space="preserve">
+    <value>Esta expedición ya fue premiada en este perfil.</value>
+  </data>
+  <data name="ProfileNotFound" xml:space="preserve">
+    <value>No se encontró el perfil de gamificación solicitado.</value>
+  </data>
+</root>
