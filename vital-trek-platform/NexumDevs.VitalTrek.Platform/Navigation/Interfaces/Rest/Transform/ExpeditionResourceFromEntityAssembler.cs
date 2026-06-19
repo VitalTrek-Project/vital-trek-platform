@@ -15,9 +15,7 @@ public class ExpeditionResourceFromEntityAssembler
             entity.Id,
             entity.TourID.id,
             entity.GuideID.id,
-            entity.Status,
-            entity.StartedAt,
-            entity.FinishedAt
-        );
+            entity.ExpeditionName,
+            entity.Status);
     }
 }
