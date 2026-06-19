@@ -4,6 +4,5 @@ public record ExpeditionResource(
     int Id,
     int TourID,
     int GuideID,
-    string Status,
-    string StartedAt,
-    string FinishedAt);
+    string ExpeditionName,
+    string Status);

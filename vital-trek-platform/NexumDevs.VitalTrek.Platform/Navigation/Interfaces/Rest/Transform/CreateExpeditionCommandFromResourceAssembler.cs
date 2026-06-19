@@ -11,7 +11,7 @@ public class CreateExpeditionCommandFromResourceAssembler
         if (resource == null)
             throw new ArgumentNullException(nameof(resource),
                 "CreateExpeditionResource cannot be null when converting to command.");
-        return new CreateExpeditionCommand(new TourId(resource.TourID), new GuideId(resource.GuideID), 
-            resource.Status, resource.StartedAt, resource.FinishedAt);
+        return new CreateExpeditionCommand(new TourId(resource.TourID), new GuideId(resource.GuideID), resource.ExpeditionName,
+            resource.Status);
     }
 }

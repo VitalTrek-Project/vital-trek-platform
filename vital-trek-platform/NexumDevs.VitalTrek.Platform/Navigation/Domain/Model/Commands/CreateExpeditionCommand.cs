@@ -6,7 +6,6 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Commands;
 public record CreateExpeditionCommand(
     TourId TourID,
     GuideId GuideID,
-    string Status,
-    string StartedAt,
-    string FinishedAt);
+    string ExpeditionName,
+    string Status);
     
