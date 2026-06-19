@@ -7,6 +7,5 @@ public record CreateExperienceCommand(
     ExpeditionId ExpeditionID,
     TouristId TouristID,
     NoteItem Note,
-    string MediaUrl,
-    string CreatedAt);
+    string MediaUrl);
     

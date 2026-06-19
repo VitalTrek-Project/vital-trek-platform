@@ -11,7 +11,6 @@ public partial class Experience
         TouristID = null!;
         Note = null!;
         MediaUrl = null!;
-        CreatedAt = null!;
     }
 
     public Experience(CreateExperienceCommand command)
@@ -21,7 +20,6 @@ public partial class Experience
         TouristID = command.TouristID;
         Note = command.Note;
         MediaUrl = command.MediaUrl;
-        CreatedAt = command.CreatedAt;
     }
     
     public int Id { get; }
@@ -30,5 +28,4 @@ public partial class Experience
     public TouristId TouristID { get; private set; }
     public NoteItem Note { get; private set; }
     public string MediaUrl { get; private set; }
-    public string CreatedAt { get; private set; }
 }

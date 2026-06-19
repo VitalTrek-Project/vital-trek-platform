@@ -4,6 +4,5 @@ public record CreateExperienceResource(
     int ExpeditionID,
     int TouristID,
     string Note,
-    string MediaUrl,
-    string CreatedAt);
+    string MediaUrl);
     

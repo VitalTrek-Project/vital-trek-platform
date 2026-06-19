@@ -16,7 +16,6 @@ public class ExperienceResourceFromEntityAssembler
             entity.ExpeditionID.id,
             entity.TouristID.id,
             entity.Note.Content,
-            entity.MediaUrl, 
-            entity.CreatedAt);
+            entity.MediaUrl);
     }
 }
