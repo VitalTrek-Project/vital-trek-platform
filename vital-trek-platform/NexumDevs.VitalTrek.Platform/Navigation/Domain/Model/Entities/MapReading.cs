@@ -4,14 +4,14 @@ public class MapReading
 {
     public MapReading () {}
 
-    public MapReading (int userId, int completedCheckpoints, int totalCheckpoints)
+    public MapReading (int expeditionId, int completedCheckpoints, int totalCheckpoints)
     {
-        UserId = userId;
+        ExpeditionId = expeditionId;
         CompletedCheckpoints = completedCheckpoints;
         TotalCheckpoints = totalCheckpoints;
     }
     
-    public int UserId { get; set; }
+    public int ExpeditionId { get; set; }
     public int CompletedCheckpoints { get; set; }
     public int TotalCheckpoints { get; set; }
 }
