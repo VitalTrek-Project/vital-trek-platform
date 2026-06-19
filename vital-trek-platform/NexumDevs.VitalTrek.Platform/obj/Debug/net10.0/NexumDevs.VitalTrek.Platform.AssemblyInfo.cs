@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("NexumDevs.VitalTrek.Platform")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+801147d4a7d00557897921ce095e5d5abb05e7bd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6c616f9cb7ee2325fc085ccaf5af1fe9090672d5")]
 [assembly: System.Reflection.AssemblyProductAttribute("NexumDevs.VitalTrek.Platform")]
 [assembly: System.Reflection.AssemblyTitleAttribute("NexumDevs.VitalTrek.Platform")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
