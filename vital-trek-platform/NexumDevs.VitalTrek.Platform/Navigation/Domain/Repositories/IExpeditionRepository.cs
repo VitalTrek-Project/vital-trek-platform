@@ -5,5 +5,5 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Repositories;
 
 public interface IExpeditionRepository : IBaseRepository<Expedition>
 {
-    
+    Task<bool> ExistsByExpeditionNameAsync(string expeditionName, CancellationToken cancellationToken);
 }

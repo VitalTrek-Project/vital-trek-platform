@@ -5,5 +5,5 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Repositories;
 
 public interface IExperienceRepository : IBaseRepository<Experience>
 {
-    
+    Task<IEnumerable<Experience>> FindExperienceByExpeditionIdAsync(int expeditionId, CancellationToken cancellationToken);
 }
