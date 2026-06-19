@@ -120,19 +120,19 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Navigation Bounded Context
-builder.Services.AddScoped<IExpeditionRepository, ExpeditionRepository>();
+//builder.Services.AddScoped<IExpeditionRepository, ExpeditionRepository>();
 builder.Services.AddScoped<IExpeditionCommandService, ExpeditionCommandService>();
 builder.Services.AddScoped<IExpeditionQueryService, ExpeditionQueryService>();
 
-builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
+//builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
 builder.Services.AddScoped<IExperienceCommandService, ExperienceCommandService>();
 builder.Services.AddScoped<IExperienceQueryService, ExperienceQueryService>();
 
-builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
+//builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<IProgressCommandService, ProgressCommandService>();
 builder.Services.AddScoped<IProgressQueryService, ProgressQueryService>();
 
-builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+//builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<IWeatherCommandService, WeatherCommandService>();
 builder.Services.AddScoped<IWeatherQueryService, WeatherQueryService>();
 
