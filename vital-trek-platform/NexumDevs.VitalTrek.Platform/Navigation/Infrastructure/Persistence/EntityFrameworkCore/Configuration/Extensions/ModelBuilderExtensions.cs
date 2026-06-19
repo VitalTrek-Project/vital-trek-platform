@@ -12,9 +12,8 @@ public static class ModelBuilderExtensions
         builder.Entity<Expedition>().Property(t => t.Id).IsRequired().ValueGeneratedOnAdd();
         builder.Entity<Expedition>().Property(t => t.TourID).IsRequired();
         builder.Entity<Expedition>().Property(t => t.GuideID).IsRequired();
+        builder.Entity<Expedition>().Property(t => t.ExpeditionName).IsRequired();
         builder.Entity<Expedition>().Property(t => t.Status).IsRequired();
-        builder.Entity<Expedition>().Property(t => t.StartedAt).IsRequired();
-        builder.Entity<Expedition>().Property(t => t.FinishedAt).IsRequired();
         
         builder.Entity<Experience>().HasKey(t => t.Id);
         builder.Entity<Experience>().Property(t => t.Id).IsRequired().ValueGeneratedOnAdd();
@@ -22,7 +21,6 @@ public static class ModelBuilderExtensions
         builder.Entity<Experience>().Property(t => t.TouristID).IsRequired();
         builder.Entity<Experience>().Property(t => t.Note).IsRequired();
         builder.Entity<Experience>().Property(t => t.MediaUrl).IsRequired();
-        builder.Entity<Experience>().Property(t => t.CreatedAt).IsRequired();
         
         builder.Entity<Progress>().HasKey(t => t.Id);
         builder.Entity<Progress>().Property(t => t.Id).IsRequired().ValueGeneratedOnAdd();
