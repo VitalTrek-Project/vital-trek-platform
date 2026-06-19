@@ -42,11 +42,9 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Expedition>()
             .Property(i => i.GuideID).IsRequired();
         builder.Entity<Expedition>()
+            .Property(i => i.ExpeditionName).IsRequired();
+        builder.Entity<Expedition>()
             .Property(i => i.Status).IsRequired();
-        builder.Entity<Expedition>()
-            .Property(i => i.StartedAt).IsRequired();
-        builder.Entity<Expedition>()
-            .Property(i => i.FinishedAt).IsRequired();
         builder.UseSnakeCaseNamingConvention();
         
         builder.Entity<Experience>().HasKey(i => i.Id);
@@ -60,8 +58,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .Property(i => i.Note).IsRequired();
         builder.Entity<Experience>()
             .Property(i => i.MediaUrl).IsRequired();
-        builder.Entity<Experience>()
-            .Property(i => i.CreatedAt).IsRequired();
         builder.UseSnakeCaseNamingConvention();
         
         builder.Entity<Progress>().HasKey(i => i.Id);
