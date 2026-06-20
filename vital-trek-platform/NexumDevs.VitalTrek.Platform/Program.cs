@@ -1,3 +1,11 @@
+using NexumDevs.VitalTrek.Platform.Monitoring.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Monitoring.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Monitoring.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Monitoring.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Services;
+using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Services;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Resources.Shared;
 using NexumDevs.VitalTrek.Platform.Shared.Domain.Repositories;
@@ -109,6 +117,21 @@ builder.Services.AddSingleton<IStringLocalizer<TourManagementMessages>, StringLo
 
 builder.Services.AddScoped<ITourCommandService, TourCommandService>();
 builder.Services.AddScoped<ITourQueryService, TourQueryService>();
+// Monitoring Bounded Context
+builder.Services.AddScoped<IIncidentRepository, IncidentRepository>();
+builder.Services.AddScoped<IIncidentCommandService, IncidentCommandService>();
+builder.Services.AddScoped<IIncidentQueryService, IncidentQueryService>();
+builder.Services.AddScoped<IAlertRepository, AlertRepository>();
+builder.Services.AddScoped<IAlertCommandService, AlertCommandService>();
+builder.Services.AddScoped<IAlertQueryService, AlertQueryService>();
+builder.Services.AddScoped<ILocationReadingRepository, LocationReadingRepository>();
+builder.Services.AddScoped<IVitalSignReadingRepository, VitalSignReadingRepository>();
+builder.Services.AddScoped<ILocationReadingCommandService, LocationReadingCommandService>();
+builder.Services.AddScoped<ILocationReadingQueryService, LocationReadingQueryService>();
+builder.Services.AddScoped<IVitalSignReadingCommandService, VitalSignReadingCommandService>();
+builder.Services.AddScoped<IVitalSignReadingQueryService, VitalSignReadingQueryService>();
+builder.Services.AddScoped<IAnomalyDetectionService, ThresholdAnomalyDetectionService>();
+
 
 
 builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
