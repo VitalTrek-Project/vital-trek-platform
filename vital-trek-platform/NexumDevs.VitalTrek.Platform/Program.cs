@@ -28,6 +28,16 @@ using NexumDevs.VitalTrek.Platform.TourManagement.Application.Internal.QueryServ
 using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.TourManagement.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 
+using NexumDevs.VitalTrek.Platform.Navigation.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Navigation.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Navigation.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+// Added for ProblemDetailsFactory
+// Added for base ProblemDetailsFactory
+// Added for IamMessages
+// Added for ProfilesMessages
 using ProblemDetailsFactory = NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -131,6 +141,30 @@ builder.Services.AddScoped<ILocationReadingQueryService, LocationReadingQuerySer
 builder.Services.AddScoped<IVitalSignReadingCommandService, VitalSignReadingCommandService>();
 builder.Services.AddScoped<IVitalSignReadingQueryService, VitalSignReadingQueryService>();
 builder.Services.AddScoped<IAnomalyDetectionService, ThresholdAnomalyDetectionService>();
+// Navigation Bounded Context
+builder.Services.AddScoped<IExpeditionRepository, ExpeditionRepository>();
+builder.Services.AddScoped<IExpeditionCommandService, ExpeditionCommandService>();
+builder.Services.AddScoped<IExpeditionQueryService, ExpeditionQueryService>();
+
+builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
+builder.Services.AddScoped<IExperienceCommandService, ExperienceCommandService>();
+builder.Services.AddScoped<IExperienceQueryService, ExperienceQueryService>();
+
+builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
+builder.Services.AddScoped<IProgressCommandService, ProgressCommandService>();
+builder.Services.AddScoped<IProgressQueryService, ProgressQueryService>();
+
+builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+builder.Services.AddScoped<IWeatherCommandService, WeatherCommandService>();
+builder.Services.AddScoped<IWeatherQueryService, WeatherQueryService>();
+
+builder.Services.AddScoped<IBinnacleReadingRepository, BinnacleReadingRepository>();
+builder.Services.AddScoped<IBinnacleReadingCommandService, BinnacleReadingCommandService>();
+builder.Services.AddScoped<IBinnacleReadingQueryService, BinnacleReadingQueryService>();
+
+// TokenSettings Configuration
+
+//builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
 
 
 

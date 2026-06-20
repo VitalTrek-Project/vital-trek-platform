@@ -1,0 +1,33 @@
+﻿using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Commands;
+using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.ValueObjects;
+
+namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
+
+public partial class Experience
+{
+    public Experience()
+    {
+        ExpeditionID = 0;
+        TouristID = 0;
+        Note = null!;
+        MediaUrl = null!;
+    }
+
+    public Experience(CreateExperienceCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ExpeditionID = command.ExpeditionID;
+        TouristID = command.TouristID;
+        Note = command.Note;
+        MediaUrl = command.MediaUrl;
+    }
+    
+    public int Id { get; }
+    
+    public int  ExpeditionID { get; private set; }
+    public Expedition Expedition { get; internal set; }
+    
+    public int TouristID { get; private set; }
+    public string Note { get; private set; }
+    public string MediaUrl { get; private set; }
+}

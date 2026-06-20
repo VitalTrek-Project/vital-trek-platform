@@ -92,4 +92,16 @@
       </Compile>
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Update="Iam\Resources\IamMessages.es.resx">
+            <DependentUpon>IamMessages.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Profiles\Resources\ProfilesMessages.es.resx">
+            <DependentUpon>ProfilesMessages.cs</DependentUpon>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Publishing\Resources\PublishingMessages.es.resx">
+            <DependentUpon>PublishingMessages.cs</DependentUpon>
+        </EmbeddedResource>
+    </ItemGroup>
+
 </Project>
