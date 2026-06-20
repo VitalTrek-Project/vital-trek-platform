@@ -10,7 +10,7 @@ public class CreateProgressCommandFromResourceAssembler
         if (resource == null)
             throw new ArgumentNullException(nameof(resource),
                 "CreateProgressResource cannot be null when converting to command.");
-        return new CreateProgressCommand(resource.CompletedCheckpoints, 
+        return new CreateProgressCommand(resource.ExpeditionId, resource.CompletedCheckpoints, 
             resource.TotalCheckpoints, resource.Percentage);
     }
 }

@@ -64,6 +64,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Progress>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
         
         builder.Entity<Progress>()
+            .Property(i => i.ExpeditionId).IsRequired();
+        builder.Entity<Progress>()
             .Property(i => i.CompletedCheckpoints).IsRequired();
         builder.Entity<Progress>()
             .Property(i => i.TotalCheckpoints).IsRequired();

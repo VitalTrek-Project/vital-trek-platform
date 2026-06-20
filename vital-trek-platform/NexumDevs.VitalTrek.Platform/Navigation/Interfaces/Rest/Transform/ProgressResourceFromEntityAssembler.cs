@@ -14,6 +14,7 @@ public class ProgressResourceFromEntityAssembler
         return new ProgressResource
         (
             entity.Id,
+            entity.ExpeditionId,
             entity.CompletedCheckpoints,
             entity.TotalCheckpoints,
             entity.Percentage
