@@ -2,7 +2,7 @@ using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Commands;
 
 namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
 
-public class Weather
+public partial class Weather
 {
     public Weather()
     {
