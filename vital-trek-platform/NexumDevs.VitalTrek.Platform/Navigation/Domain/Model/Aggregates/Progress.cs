@@ -22,8 +22,10 @@ public partial class Progress
     }
     
     public int Id { get; }
-    public int ExpeditionId { get; set; }
+    
+    public int ExpeditionId { get; private set; }
     public Expedition Expedition { get; internal set; }
+    
     public int CompletedCheckpoints { get; private set; }
     public int TotalCheckpoints { get; private set; }
     public double Percentage { get; private set; }
