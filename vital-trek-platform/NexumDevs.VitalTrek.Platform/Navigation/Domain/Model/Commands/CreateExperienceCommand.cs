@@ -6,6 +6,6 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Commands;
 public record CreateExperienceCommand(
     int ExpeditionID,
     int TouristID,
-    NoteItem Note,
+    string Note,
     string MediaUrl);
     

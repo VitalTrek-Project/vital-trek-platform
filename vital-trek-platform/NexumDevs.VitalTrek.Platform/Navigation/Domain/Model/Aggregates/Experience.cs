@@ -28,6 +28,6 @@ public partial class Experience
     public Expedition Expedition { get; internal set; }
     
     public int TouristID { get; private set; }
-    public NoteItem Note { get; private set; }
+    public string Note { get; private set; }
     public string MediaUrl { get; private set; }
 }
