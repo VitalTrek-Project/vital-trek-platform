@@ -25,6 +25,8 @@ public partial class Experience
     public int Id { get; }
     
     public ExpeditionId  ExpeditionID { get; private set; }
+    public Expedition Expedition { get; internal set; }
+    
     public TouristId TouristID { get; private set; }
     public NoteItem Note { get; private set; }
     public string MediaUrl { get; private set; }
