@@ -13,6 +13,8 @@ public class BinnacleReading
         CreatedAt = createdAt;
     }
     
+    public int Id { get; private set; }
+    
     public int ExpeditionId { get; set; }
     public int TouristId { get; set; }
     public string Note { get; set; }

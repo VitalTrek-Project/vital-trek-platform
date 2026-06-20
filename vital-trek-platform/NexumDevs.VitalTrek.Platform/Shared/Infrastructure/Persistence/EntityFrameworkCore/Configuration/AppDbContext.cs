@@ -3,6 +3,7 @@ using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrame
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
+using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Entities;
 
 namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
@@ -88,4 +89,6 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
             .Property(i => i.WindSpeedKmh).IsRequired();
         builder.UseSnakeCaseNamingConvention();
     }
+    
+    public DbSet<BinnacleReading> BinnacleReadings { get; set; }
 }

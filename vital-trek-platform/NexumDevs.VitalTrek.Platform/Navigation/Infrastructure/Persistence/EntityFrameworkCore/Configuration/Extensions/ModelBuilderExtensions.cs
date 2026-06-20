@@ -35,5 +35,7 @@ public static class ModelBuilderExtensions
         builder.Entity<Weather>().Property(t => t.Condition).IsRequired();
         builder.Entity<Weather>().Property(t => t.Humidity).IsRequired();
         builder.Entity<Weather>().Property(t => t.WindSpeedKmh).IsRequired();
+        
+        builder.Entity<BinnacleReading>();
     }
 }

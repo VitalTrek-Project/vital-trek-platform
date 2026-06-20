@@ -137,6 +137,10 @@ builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<IWeatherCommandService, WeatherCommandService>();
 builder.Services.AddScoped<IWeatherQueryService, WeatherQueryService>();
 
+builder.Services.AddScoped<IBinnacleReadingRepository, BinnacleReadingRepository>();
+builder.Services.AddScoped<IBinnacleReadingCommandService, BinnacleReadingCommandService>();
+builder.Services.AddScoped<IBinnacleReadingQueryService, BinnacleReadingQueryService>();
+
 // TokenSettings Configuration
 
 //builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
