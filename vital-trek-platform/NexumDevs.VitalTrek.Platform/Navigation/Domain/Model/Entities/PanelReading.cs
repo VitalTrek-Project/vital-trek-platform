@@ -11,7 +11,7 @@ public class PanelReading
         CompletedCheckpoints = completedCheckpoints;
     }
     
-    public int  ExpeditionId { get; set; }
-    public double TotalCheckpoints { get; set; }
-    public double CompletedCheckpoints { get; set; }
+    public int ExpeditionId { get; set; }
+    public int TotalCheckpoints { get; set; }
+    public int CompletedCheckpoints { get; set; }
 }
