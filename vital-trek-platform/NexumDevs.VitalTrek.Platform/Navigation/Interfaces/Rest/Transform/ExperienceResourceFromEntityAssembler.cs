@@ -13,7 +13,7 @@ public class ExperienceResourceFromEntityAssembler
         
         return new ExperienceResource(
             entity.Id,
-            entity.ExpeditionID.id,
+            entity.ExpeditionID,
             entity.TouristID.id,
             entity.Note.Content,
             entity.MediaUrl);
