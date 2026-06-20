@@ -17,6 +17,7 @@ using NexumDevs.VitalTrek.Platform.Navigation.Application.Internal.CommandServic
 using NexumDevs.VitalTrek.Platform.Navigation.Application.Internal.QueryServices;
 using NexumDevs.VitalTrek.Platform.Navigation.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Navigation.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Navigation.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 // Added for ProblemDetailsFactory
 // Added for base ProblemDetailsFactory
 // Added for IamMessages
@@ -120,19 +121,19 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Navigation Bounded Context
-//builder.Services.AddScoped<IExpeditionRepository, ExpeditionRepository>();
+builder.Services.AddScoped<IExpeditionRepository, ExpeditionRepository>();
 builder.Services.AddScoped<IExpeditionCommandService, ExpeditionCommandService>();
 builder.Services.AddScoped<IExpeditionQueryService, ExpeditionQueryService>();
 
-//builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
+builder.Services.AddScoped<IExperienceRepository, ExperienceRepository>();
 builder.Services.AddScoped<IExperienceCommandService, ExperienceCommandService>();
 builder.Services.AddScoped<IExperienceQueryService, ExperienceQueryService>();
 
-//builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
+builder.Services.AddScoped<IProgressRepository, ProgressRepository>();
 builder.Services.AddScoped<IProgressCommandService, ProgressCommandService>();
 builder.Services.AddScoped<IProgressQueryService, ProgressQueryService>();
 
-//builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
+builder.Services.AddScoped<IWeatherRepository, WeatherRepository>();
 builder.Services.AddScoped<IWeatherCommandService, WeatherCommandService>();
 builder.Services.AddScoped<IWeatherQueryService, WeatherQueryService>();
 
