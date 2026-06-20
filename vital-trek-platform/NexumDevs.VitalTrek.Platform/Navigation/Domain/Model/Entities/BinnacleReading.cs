@@ -4,7 +4,7 @@ public class BinnacleReading
 {
     public BinnacleReading() {}
 
-    public BinnacleReading (int expeditionId, int touristId, string note, DateTime mediaUrl, DateTime createdAt)
+    public BinnacleReading (int expeditionId, int touristId, string note, string mediaUrl, DateTime createdAt)
     {
         ExpeditionId = expeditionId;
         TouristId = touristId;
@@ -16,6 +16,6 @@ public class BinnacleReading
     public int ExpeditionId { get; set; }
     public int TouristId { get; set; }
     public string Note { get; set; }
-    public DateTime MediaUrl { get; set; }
+    public string MediaUrl { get; set; }
     public DateTime CreatedAt { get; set; }
 }
