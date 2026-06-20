@@ -1,6 +1,7 @@
 using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
 using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Entities;
 using Microsoft.EntityFrameworkCore;
+using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.ValueObjects;
 
 namespace NexumDevs.VitalTrek.Platform.Navigation.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
