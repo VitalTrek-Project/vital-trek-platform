@@ -77,6 +77,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Weather>().Property(i => i.Id).IsRequired().ValueGeneratedOnAdd();
         
         builder.Entity<Weather>()
+            .Property(i => i.ExpeditionId).IsRequired();
+        builder.Entity<Weather>()
             .Property(i => i.TemperatureCelsius).IsRequired();
         builder.Entity<Weather>()
             .Property(i => i.Condition).IsRequired();
