@@ -2,6 +2,7 @@
 
 public record WeatherResource(
     int Id,
+    int ExpeditionId,
     double TemperatureCelsius,
     string Condition,
     double Humidity,

@@ -11,7 +11,7 @@ public class CreateWeatherCommandFromResourceAssembler
             throw new ArgumentNullException(nameof(resource),
                 "CreateWeatherResource cannot be null when converting to command.");
         
-        return new CreateWeatherCommand(resource.TemperatureCelsius, resource.Condition,
+        return new CreateWeatherCommand(resource.ExpeditionId, resource.TemperatureCelsius, resource.Condition,
             resource.Humidity, resource.WindSpeedKmh);
     }
 }

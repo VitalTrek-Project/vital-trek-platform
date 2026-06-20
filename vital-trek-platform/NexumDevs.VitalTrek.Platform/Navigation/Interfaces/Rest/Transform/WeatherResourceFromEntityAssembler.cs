@@ -13,6 +13,7 @@ public class WeatherResourceFromEntityAssembler
         
         return new WeatherResource(
             entity.Id,
+            entity.ExpeditionId,
             entity.TemperatureCelsius,
             entity.Condition,
             entity.Humidity,

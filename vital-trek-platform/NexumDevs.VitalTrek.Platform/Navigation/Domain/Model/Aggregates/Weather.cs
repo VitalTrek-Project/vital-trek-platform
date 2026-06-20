@@ -23,6 +23,9 @@ public partial class Weather
     
     public int Id { get; }
     
+    public int ExpeditionId { get; private set; }
+    public Expedition Expedition { get; internal set; }
+    
     public double TemperatureCelsius { get; private set; }
     public string Condition { get; private set; }
     public double Humidity { get; private set; }
