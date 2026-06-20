@@ -7,8 +7,8 @@ public partial class Expedition
 {
     public Expedition()
     {
-        TourID = null!;
-        GuideID = null!;
+        TourID = 0;
+        GuideID = 0;
         ExpeditionName = null!;
         Status = null!;
     }
@@ -24,8 +24,8 @@ public partial class Expedition
     
     public int Id { get; }
     
-    public TourId TourID { get; private set; }
-    public GuideId GuideID { get; private set; }
+    public int TourID { get; private set; }
+    public int GuideID { get; private set; }
     public string ExpeditionName { get; private set; }
     public string Status { get; private set; }
 }

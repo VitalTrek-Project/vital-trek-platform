@@ -8,7 +8,7 @@ public partial class Experience
     public Experience()
     {
         ExpeditionID = 0;
-        TouristID = null!;
+        TouristID = 0;
         Note = null!;
         MediaUrl = null!;
     }
@@ -27,7 +27,7 @@ public partial class Experience
     public int  ExpeditionID { get; private set; }
     public Expedition Expedition { get; internal set; }
     
-    public TouristId TouristID { get; private set; }
+    public int TouristID { get; private set; }
     public NoteItem Note { get; private set; }
     public string MediaUrl { get; private set; }
 }

@@ -13,8 +13,8 @@ public class ExpeditionResourceFromEntityAssembler
 
         return new ExpeditionResource(
             entity.Id,
-            entity.TourID.id,
-            entity.GuideID.id,
+            entity.TourID,
+            entity.GuideID,
             entity.ExpeditionName,
             entity.Status);
     }

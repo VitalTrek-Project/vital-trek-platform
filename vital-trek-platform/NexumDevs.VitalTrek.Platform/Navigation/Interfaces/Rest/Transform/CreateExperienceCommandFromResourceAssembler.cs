@@ -11,7 +11,7 @@ public class CreateExperienceCommandFromResourceAssembler
         if (resource == null)
             throw new ArgumentNullException(nameof(resource),
                 "CreateExperienceResource cannot be null when converting to command.");
-        return new CreateExperienceCommand(resource.ExpeditionID, 
-            new TouristId(resource.TouristID), new NoteItem(resource.Note), resource.MediaUrl);
+        return new CreateExperienceCommand(resource.ExpeditionID,
+            resource.TouristID, new NoteItem(resource.Note), resource.MediaUrl);
     }
 }
