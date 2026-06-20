@@ -6,6 +6,14 @@ using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Services;
 using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Services;
+
+using NexumDevs.VitalTrek.Platform.Engagement.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Engagement.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Engagement.Resources;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Resources.Shared;
 using NexumDevs.VitalTrek.Platform.Shared.Domain.Repositories;
@@ -161,6 +169,13 @@ builder.Services.AddScoped<IWeatherQueryService, WeatherQueryService>();
 builder.Services.AddScoped<IBinnacleReadingRepository, BinnacleReadingRepository>();
 builder.Services.AddScoped<IBinnacleReadingCommandService, BinnacleReadingCommandService>();
 builder.Services.AddScoped<IBinnacleReadingQueryService, BinnacleReadingQueryService>();
+// Engagement Bounded Context
+builder.Services.AddScoped<IGamificationProfileRepository, GamificationProfileRepository>();
+builder.Services.AddScoped<IStringLocalizer>(sp =>
+    sp.GetRequiredService<IStringLocalizer<EngagementMessages>>());
+builder.Services.AddSingleton<IStringLocalizer<EngagementMessages>, StringLocalizer<EngagementMessages>>();
+builder.Services.AddScoped<IEngagementCommandService, EngagementCommandService>();
+builder.Services.AddScoped<IEngagementQueryService, EngagementQueryService>();
 
 // TokenSettings Configuration
 
