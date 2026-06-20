@@ -1,3 +1,4 @@
+using System;
 using NexumDevs.VitalTrek.Platform.Monitoring.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Model;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Model.Aggregate;
@@ -21,12 +22,17 @@ public class AlertCommandService(
 
     public async Task<Result<Alert>> Handle(RaiseAlertCommand command, CancellationToken cancellationToken)
     {
-        var alert = new Alert(command);
         try
         {
+            var alert = new Alert(command);
             await alertRepository.AddAsync(alert, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
             return Result<Alert>.Success(alert);
+        }
+        catch (ArgumentException)
+        {
+            // This will catch errors from Enum.Parse if the values are invalid
+            return Result<Alert>.Failure(MonitoringError.InternalServerError, $"Invalid value for Type or Severity. Received: Type='{command.Type}', Severity='{command.Severity}'");
         }
         catch (OperationCanceledException)
         {
