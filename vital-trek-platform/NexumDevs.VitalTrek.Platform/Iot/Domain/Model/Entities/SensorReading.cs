@@ -6,6 +6,7 @@ namespace NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Entities;
 
 public class SensorReading : AuditableModel
 {
+    //class SensorReading
     public SensorReading()
     {
     }
