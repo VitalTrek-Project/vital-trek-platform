@@ -42,6 +42,13 @@ using NexumDevs.VitalTrek.Platform.Navigation.Application.Internal.QueryServices
 using NexumDevs.VitalTrek.Platform.Navigation.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Navigation.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Navigation.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
+using NexumDevs.VitalTrek.Platform.Iot.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Iot.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Iot.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Iot.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Iot.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Iot.Infrastructure.Persistence.EFC.Repositories;
 // Added for ProblemDetailsFactory
 // Added for base ProblemDetailsFactory
 // Added for IamMessages
@@ -169,6 +176,13 @@ builder.Services.AddScoped<IWeatherQueryService, WeatherQueryService>();
 builder.Services.AddScoped<IBinnacleReadingRepository, BinnacleReadingRepository>();
 builder.Services.AddScoped<IBinnacleReadingCommandService, BinnacleReadingCommandService>();
 builder.Services.AddScoped<IBinnacleReadingQueryService, BinnacleReadingQueryService>();
+// IoT Bounded Context
+builder.Services.AddScoped<IIoTDeviceRepository, IoTDeviceRepository>();
+builder.Services.AddScoped<ISensorReadingRepository, SensorReadingRepository>();
+builder.Services.AddScoped<IIoTDeviceCommandService, IoTDeviceCommandService>();
+builder.Services.AddScoped<ISensorReadingCommandService, SensorReadingCommandService>();
+builder.Services.AddScoped<IIoTDeviceQueryService, IoTDeviceQueryService>();
+builder.Services.AddScoped<ISensorReadingQueryService, SensorReadingQueryService>();
 // Engagement Bounded Context
 builder.Services.AddScoped<IGamificationProfileRepository, GamificationProfileRepository>();
 builder.Services.AddScoped<IStringLocalizer>(sp =>
