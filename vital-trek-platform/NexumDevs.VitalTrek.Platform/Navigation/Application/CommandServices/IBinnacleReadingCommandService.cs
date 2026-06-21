@@ -5,5 +5,6 @@ namespace NexumDevs.VitalTrek.Platform.Navigation.Application.CommandServices;
 
 public interface IBinnacleReadingCommandService
 {
+    //Binnacle
     Task<BinnacleReading> Handle(RecordBinnacleReadingCommand command, CancellationToken cancellationToken);
 }
