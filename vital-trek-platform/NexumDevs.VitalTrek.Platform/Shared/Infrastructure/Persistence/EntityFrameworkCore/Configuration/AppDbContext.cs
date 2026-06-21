@@ -8,6 +8,9 @@ using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrame
 using Microsoft.EntityFrameworkCore;
 using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Aggregates;
 using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Entities;
+using NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Aggregate;
+using NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Entities;
+using NexumDevs.VitalTrek.Platform.Iot.Infrastructure.Persistence.EFC.Configuration.Extensions;
 
 namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
@@ -120,8 +123,12 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.Entity<Weather>()
             .Property(i => i.WindSpeedKmh).IsRequired();
         builder.UseSnakeCaseNamingConvention();
+
         builder.ApplyEngagementConfiguration();
+        builder.ApplyIoTConfiguration();
     }
     
     public DbSet<BinnacleReading> BinnacleReadings { get; set; }
+    public DbSet<IoTDevice> IoTDevices { get; set; }
+    public DbSet<SensorReading> SensorReadings { get; set; }
 }
