@@ -1,7 +1,7 @@
-using Acme.Center.Platform.Shared.Domain.Repositories;
-using Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
+using NexumDevs.VitalTrek.Platform.Shared.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
-namespace Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 
 /// <summary>
 ///     Unit of work for the application.

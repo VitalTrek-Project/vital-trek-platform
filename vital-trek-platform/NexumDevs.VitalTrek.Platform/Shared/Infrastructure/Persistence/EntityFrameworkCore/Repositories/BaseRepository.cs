@@ -1,8 +1,8 @@
-using Acme.Center.Platform.Shared.Domain.Repositories;
-using Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
+using NexumDevs.VitalTrek.Platform.Shared.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using Microsoft.EntityFrameworkCore;
 
-namespace Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 
 /// <summary>
 ///     Base repository for all repositories

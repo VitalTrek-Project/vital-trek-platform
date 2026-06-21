@@ -1,13 +1,13 @@
 using System.Net.Mime;
 using System.Text.Json;
-using Acme.Center.Platform.Resources.Errors;
-using Acme.Center.Platform.Resources.Shared;
+using NexumDevs.VitalTrek.Platform.Resources.Errors;
+using NexumDevs.VitalTrek.Platform.Resources.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 
 // For OperationCanceledException
 
-namespace Acme.Center.Platform.Shared.Infrastructure.Pipeline.Middleware.Components;
+namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Pipeline.Middleware.Components;
 
 /// <summary>
 ///     Global Exception Handling Middleware

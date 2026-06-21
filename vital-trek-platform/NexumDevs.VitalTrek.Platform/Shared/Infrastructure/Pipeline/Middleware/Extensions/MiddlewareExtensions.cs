@@ -1,6 +1,6 @@
-using Acme.Center.Platform.Shared.Infrastructure.Pipeline.Middleware.Components;
+using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Pipeline.Middleware.Components;
 
-namespace Acme.Center.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
+namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
 
 /// <summary>
 ///     Middleware extensions

@@ -1,8 +1,8 @@
-using Acme.Center.Platform.Shared.Domain.Model.Entities;
+using NexumDevs.VitalTrek.Platform.Shared.Domain.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-namespace Acme.Center.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
+namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Interceptors;
 
 /// <summary>
 ///     EF Core interceptor that automatically populates audit timestamps on any entity

@@ -1,4 +1,4 @@
-namespace DefaultNamespace;
+namespace NexumDevs.VitalTrek.Platform.Shared.Domain.Model;
 
 /// <summary>
 ///     Represents a domain error.
