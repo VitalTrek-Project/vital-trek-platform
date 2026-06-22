@@ -6,7 +6,7 @@ namespace NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates;
 /// <summary>
 /// Aggregate Root of the Engagement Bounded Context.
 /// Represents the gamification profile of a tourist, tracking their
-/// total points, earned rank, and unlocked badges across all expeditions.
+/// total points, earned rank, and unlocked badges across all expeditions..
 /// </summary>
 public class GamificationProfile
 {
