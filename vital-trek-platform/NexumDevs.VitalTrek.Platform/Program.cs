@@ -10,6 +10,7 @@ using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Services;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.CommandServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.Services;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Engagement.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
@@ -196,13 +197,38 @@ builder.Services.AddScoped<IIoTDeviceCommandService, IoTDeviceCommandService>();
 builder.Services.AddScoped<ISensorReadingCommandService, SensorReadingCommandService>();
 builder.Services.AddScoped<IIoTDeviceQueryService, IoTDeviceQueryService>();
 builder.Services.AddScoped<ISensorReadingQueryService, SensorReadingQueryService>();
-// Engagement Bounded Context
-builder.Services.AddScoped<IGamificationProfileRepository, GamificationProfileRepository>();
-builder.Services.AddScoped<IStringLocalizer>(sp =>
-    sp.GetRequiredService<IStringLocalizer<EngagementMessages>>());
+// Engagement (Loyalty) Bounded Context
 builder.Services.AddSingleton<IStringLocalizer<EngagementMessages>, StringLocalizer<EngagementMessages>>();
-builder.Services.AddScoped<IEngagementCommandService, EngagementCommandService>();
-builder.Services.AddScoped<IEngagementQueryService, EngagementQueryService>();
+
+builder.Services.AddScoped<IGamificationProfileRepository, GamificationProfileRepository>();
+builder.Services.AddScoped<IPointsTransactionRepository, PointsTransactionRepository>();
+builder.Services.AddScoped<ILoyaltyProgramRepository, LoyaltyProgramRepository>();
+builder.Services.AddScoped<ILoyaltyTierRepository, LoyaltyTierRepository>();
+builder.Services.AddScoped<IRewardRepository, RewardRepository>();
+builder.Services.AddScoped<IRedemptionRepository, RedemptionRepository>();
+builder.Services.AddScoped<IReferralCodeRepository, ReferralCodeRepository>();
+builder.Services.AddScoped<IReferralRepository, ReferralRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IBadgeDefinitionRepository, BadgeDefinitionRepository>();
+builder.Services.AddScoped<IAwardedBadgeRepository, AwardedBadgeRepository>();
+builder.Services.AddScoped<IInAppNotificationRepository, InAppNotificationRepository>();
+
+builder.Services.AddScoped<PointsReconciler>();
+
+builder.Services.AddScoped<IProgramCommandService, ProgramCommandService>();
+builder.Services.AddScoped<IProgramQueryService, ProgramQueryService>();
+builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
+builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
+builder.Services.AddScoped<IRewardCommandService, RewardCommandService>();
+builder.Services.AddScoped<IRewardQueryService, RewardQueryService>();
+builder.Services.AddScoped<IRedemptionCommandService, RedemptionCommandService>();
+builder.Services.AddScoped<IRedemptionQueryService, RedemptionQueryService>();
+builder.Services.AddScoped<IReferralCommandService, ReferralCommandService>();
+builder.Services.AddScoped<IBadgeCommandService, BadgeCommandService>();
+builder.Services.AddScoped<IBadgeQueryService, BadgeQueryService>();
+builder.Services.AddScoped<INotificationCommandService, NotificationCommandService>();
+builder.Services.AddScoped<INotificationQueryService, NotificationQueryService>();
+builder.Services.AddScoped<IMetricsQueryService, MetricsQueryService>();
 // Support Bounded Context
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddSingleton<IStringLocalizer<SupportMessages>, StringLocalizer<SupportMessages>>();
