@@ -3,10 +3,67 @@
   <data name="InvalidPoints" xml:space="preserve">
     <value>Los puntos deben ser mayores a cero.</value>
   </data>
-  <data name="ExpeditionAlreadyAwarded" xml:space="preserve">
-    <value>Esta expedición ya fue premiada en este perfil.</value>
+  <data name="DuplicateTransaction" xml:space="preserve">
+    <value>Ya se registró una transacción de puntos para este origen.</value>
   </data>
   <data name="ProfileNotFound" xml:space="preserve">
     <value>No se encontró el perfil de gamificación solicitado.</value>
+  </data>
+  <data name="ProgramNotFound" xml:space="preserve">
+    <value>No se encontró el programa de fidelización de esta agencia.</value>
+  </data>
+  <data name="InvalidProgramConfiguration" xml:space="preserve">
+    <value>La configuración del programa de fidelización no es válida.</value>
+  </data>
+  <data name="TierNotFound" xml:space="preserve">
+    <value>No se encontró el nivel solicitado.</value>
+  </data>
+  <data name="InvalidTierConfiguration" xml:space="preserve">
+    <value>La configuración del nivel no es válida.</value>
+  </data>
+  <data name="RewardNotFound" xml:space="preserve">
+    <value>No se encontró la recompensa solicitada.</value>
+  </data>
+  <data name="RewardInactive" xml:space="preserve">
+    <value>Esta recompensa no está activa actualmente.</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>Esta recompensa no tiene stock disponible.</value>
+  </data>
+  <data name="InsufficientBalance" xml:space="preserve">
+    <value>El turista no tiene suficientes puntos para este canje.</value>
+  </data>
+  <data name="RedemptionNotFound" xml:space="preserve">
+    <value>No se encontró el canje solicitado.</value>
+  </data>
+  <data name="RedemptionAlreadyProcessed" xml:space="preserve">
+    <value>Este canje ya fue usado o expiró.</value>
+  </data>
+  <data name="ReferralCodeNotFound" xml:space="preserve">
+    <value>No se encontró el código de referido.</value>
+  </data>
+  <data name="SelfReferralNotAllowed" xml:space="preserve">
+    <value>Un turista no puede canjear su propio código de referido.</value>
+  </data>
+  <data name="ReferralAlreadyUsed" xml:space="preserve">
+    <value>Este referido ya fue canjeado.</value>
+  </data>
+  <data name="BadgeDefinitionNotFound" xml:space="preserve">
+    <value>No se encontró la definición de badge solicitada.</value>
+  </data>
+  <data name="DuplicateBadgeCode" xml:space="preserve">
+    <value>Ya existe una definición de badge con este código.</value>
+  </data>
+  <data name="InvalidReview" xml:space="preserve">
+    <value>La calificación de la reseña debe estar entre 1 y 5.</value>
+  </data>
+  <data name="DuplicateReview" xml:space="preserve">
+    <value>Este turista ya dejó una reseña para esta expedición.</value>
+  </data>
+  <data name="NotificationNotFound" xml:space="preserve">
+    <value>No se encontró la notificación solicitada.</value>
+  </data>
+  <data name="InvalidEventType" xml:space="preserve">
+    <value>El tipo de evento de puntos no es reconocido.</value>
   </data>
 </root>

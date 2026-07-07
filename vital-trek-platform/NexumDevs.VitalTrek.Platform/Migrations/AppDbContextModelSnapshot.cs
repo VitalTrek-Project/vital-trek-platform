@@ -19,14 +19,103 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                 .HasAnnotation("ProductVersion", "10.0.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.BadgeDefinition", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int>("RuleThreshold")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RuleType")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.ToTable("BadgeDefinitions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                            Code = "first_expedition",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Description = "Completaste tu primera expedición.",
+                            Name = "Primera expedición",
+                            RuleThreshold = 1,
+                            RuleType = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                            Code = "five_expeditions",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Description = "Completaste cinco expediciones.",
+                            Name = "5 expediciones",
+                            RuleThreshold = 5,
+                            RuleType = 0
+                        },
+                        new
+                        {
+                            Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                            Code = "first_review",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Description = "Dejaste tu primera reseña.",
+                            Name = "Primera reseña",
+                            RuleThreshold = 1,
+                            RuleType = 1
+                        },
+                        new
+                        {
+                            Id = new Guid("44444444-4444-4444-4444-444444444444"),
+                            Code = "first_referral",
+                            CreatedAt = new DateTimeOffset(new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
+                            Description = "Un turista que referiste completó su primera expedición.",
+                            Name = "Primer referido",
+                            RuleThreshold = 1,
+                            RuleType = 2
+                        });
+                });
+
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.GamificationProfile", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime");
+
+                    b.Property<Guid?>("CurrentTierId")
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("TotalPoints")
                         .HasColumnType("int");
@@ -39,23 +128,145 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TouristId")
+                    b.HasIndex("TouristId", "AgencyId")
                         .IsUnique();
 
                     b.ToTable("GamificationProfiles", (string)null);
                 });
 
-            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Entities.AwardedExpedition", b =>
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.InAppNotification", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTimeOffset>("AwardedAt")
+                    b.Property<Guid?>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetime");
 
-                    b.Property<Guid>("ExpeditionId")
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<Guid>("RecipientTouristId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipientTouristId", "IsRead");
+
+                    b.ToTable("InAppNotifications", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.LoyaltyProgram", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int?>("ExpirationMonths")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PointsPerExpeditionBooked")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PointsPerExpeditionCompleted")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PointsPerReferral")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PointsPerReview")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgencyId")
+                        .IsUnique();
+
+                    b.ToTable("LoyaltyPrograms", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.LoyaltyTier", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Benefits")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("MinPoints")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgencyId");
+
+                    b.ToTable("LoyaltyTiers", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.PointsTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("datetime");
 
                     b.Property<int>("Points")
                         .HasColumnType("int");
@@ -63,12 +274,234 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                     b.Property<Guid>("ProfileId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("SourceId")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<Guid>("TouristId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ProfileId", "ExpeditionId")
+                    b.HasIndex("ProfileId");
+
+                    b.HasIndex("TouristId", "AgencyId", "Type", "SourceId")
                         .IsUnique();
 
-                    b.ToTable("AwardedExpeditions", (string)null);
+                    b.ToTable("PointsTransactions", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.Redemption", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("PointsSpent")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("RewardId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TouristId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset?>("UsedAt")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("AgencyId", "TouristId");
+
+                    b.ToTable("Redemptions", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.Referral", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset?>("CompletedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("ReferralCodeId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ReferredTouristId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("ReferrerTouristId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgencyId", "ReferredTouristId");
+
+                    b.ToTable("Referrals", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.ReferralCode", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("TouristId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("TouristId", "AgencyId")
+                        .IsUnique();
+
+                    b.ToTable("ReferralCodes", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.Review", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("ExpeditionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("TouristId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgencyId", "TouristId", "ExpeditionId")
+                        .IsUnique();
+
+                    b.ToTable("Reviews", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.Reward", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<int>("PointsCost")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Stock")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgencyId");
+
+                    b.ToTable("Rewards", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Entities.AwardedBadge", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("AwardedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("BadgeDefinitionId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("TouristId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TouristId", "AgencyId", "BadgeDefinitionId")
+                        .IsUnique();
+
+                    b.ToTable("AwardedBadges", (string)null);
                 });
 
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Aggregate.IoTDevice", b =>
@@ -668,15 +1101,6 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                     b.ToTable("TicketReplies", (string)null);
                 });
 
-            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Entities.AwardedExpedition", b =>
-                {
-                    b.HasOne("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.GamificationProfile", null)
-                        .WithMany("AwardedExpeditions")
-                        .HasForeignKey("ProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Entities.SensorReading", b =>
                 {
                     b.HasOne("NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Aggregate.IoTDevice", null)
@@ -729,11 +1153,6 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.GamificationProfile", b =>
-                {
-                    b.Navigation("AwardedExpeditions");
                 });
 
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Aggregates.Ticket", b =>
