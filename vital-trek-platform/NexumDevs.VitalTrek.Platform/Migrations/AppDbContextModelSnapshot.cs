@@ -572,6 +572,102 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                     b.ToTable("binnacle_readings");
                 });
 
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Aggregates.Ticket", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("Priority")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("UserMode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Tickets", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Entities.TicketReply", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("AuthorMode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("AuthorName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId");
+
+                    b.ToTable("TicketReplies", (string)null);
+                });
+
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Entities.AwardedExpedition", b =>
                 {
                     b.HasOne("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.GamificationProfile", null)
@@ -626,9 +722,23 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                     b.Navigation("Expedition");
                 });
 
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Entities.TicketReply", b =>
+                {
+                    b.HasOne("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Aggregates.Ticket", null)
+                        .WithMany("Replies")
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Engagement.Domain.Model.Aggregates.GamificationProfile", b =>
                 {
                     b.Navigation("AwardedExpeditions");
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Aggregates.Ticket", b =>
+                {
+                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

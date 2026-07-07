@@ -44,6 +44,14 @@
             <Generator>ResXFileCodeGenerator</Generator>
             <LastGenOutput>EngagementMessages.es.Designer.cs</LastGenOutput>
         </EmbeddedResource>
+        <EmbeddedResource Update="Support\Resources\SupportMessages.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>SupportMessages.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+        <EmbeddedResource Update="Support\Resources\SupportMessages.es.resx">
+            <Generator>ResXFileCodeGenerator</Generator>
+            <LastGenOutput>SupportMessages.es.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>

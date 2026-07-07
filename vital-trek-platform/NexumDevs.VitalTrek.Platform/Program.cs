@@ -49,6 +49,14 @@ using NexumDevs.VitalTrek.Platform.Iot.Application.Internal.QueryServices;
 using NexumDevs.VitalTrek.Platform.Iot.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Iot.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Iot.Infrastructure.Persistence.EFC.Repositories;
+
+using NexumDevs.VitalTrek.Platform.Support.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Support.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Support.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Support.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Support.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Support.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Support.Resources;
 // Added for ProblemDetailsFactory
 // Added for base ProblemDetailsFactory
 // Added for IamMessages
@@ -190,6 +198,11 @@ builder.Services.AddScoped<IStringLocalizer>(sp =>
 builder.Services.AddSingleton<IStringLocalizer<EngagementMessages>, StringLocalizer<EngagementMessages>>();
 builder.Services.AddScoped<IEngagementCommandService, EngagementCommandService>();
 builder.Services.AddScoped<IEngagementQueryService, EngagementQueryService>();
+// Support Bounded Context
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddSingleton<IStringLocalizer<SupportMessages>, StringLocalizer<SupportMessages>>();
+builder.Services.AddScoped<ISupportCommandService, SupportCommandService>();
+builder.Services.AddScoped<ISupportQueryService, SupportQueryService>();
 
 // TokenSettings Configuration
 
