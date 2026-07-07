@@ -57,6 +57,11 @@ using NexumDevs.VitalTrek.Platform.Support.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Support.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Support.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 using NexumDevs.VitalTrek.Platform.Support.Resources;
+
+using NexumDevs.VitalTrek.Platform.Dashboard.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Dashboard.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Dashboard.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Dashboard.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 // Added for ProblemDetailsFactory
 // Added for base ProblemDetailsFactory
 // Added for IamMessages
@@ -203,6 +208,9 @@ builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddSingleton<IStringLocalizer<SupportMessages>, StringLocalizer<SupportMessages>>();
 builder.Services.AddScoped<ISupportCommandService, SupportCommandService>();
 builder.Services.AddScoped<ISupportQueryService, SupportQueryService>();
+// Dashboard Bounded Context
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IDashboardQueryService, DashboardQueryService>();
 
 // TokenSettings Configuration
 
