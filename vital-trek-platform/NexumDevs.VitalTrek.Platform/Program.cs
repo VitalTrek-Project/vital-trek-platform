@@ -78,6 +78,19 @@ using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
 using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Tokens.Jwt.Services;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Acl;
 using NexumDevs.VitalTrek.Platform.Iam.Resources;
+
+using NexumDevs.VitalTrek.Platform.Profiles.Application.Acl;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Profiles.Interfaces.Acl;
+using NexumDevs.VitalTrek.Platform.Profiles.Resources;
+using NexumDevs.VitalTrek.Platform.TourManagement.Application.Acl;
+using NexumDevs.VitalTrek.Platform.TourManagement.Interfaces.Acl;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -299,6 +312,24 @@ builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IHashingService, HashingService>();
 builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
+
+// TourManagement Acl facade (consumed by Profiles to authorize agency-staff reads)
+builder.Services.AddScoped<ITourManagementContextFacade, TourManagementContextFacade>();
+
+// Profiles Bounded Context
+builder.Services.AddSingleton<IStringLocalizer<ProfilesMessages>, StringLocalizer<ProfilesMessages>>();
+builder.Services.AddScoped<ITouristProfileRepository, TouristProfileRepository>();
+builder.Services.AddScoped<ITouristPreferencesRepository, TouristPreferencesRepository>();
+builder.Services.AddScoped<IStaffProfileRepository, StaffProfileRepository>();
+builder.Services.AddScoped<IStaffPreferencesRepository, StaffPreferencesRepository>();
+builder.Services.AddScoped<IMedicalDataAccessLogRepository, MedicalDataAccessLogRepository>();
+builder.Services.AddScoped<ITouristProfileCommandService, TouristProfileCommandService>();
+builder.Services.AddScoped<ITouristProfileQueryService, TouristProfileQueryService>();
+builder.Services.AddScoped<ITouristPreferencesCommandService, TouristPreferencesCommandService>();
+builder.Services.AddScoped<ITouristPreferencesQueryService, TouristPreferencesQueryService>();
+builder.Services.AddScoped<IStaffCommandService, StaffCommandService>();
+builder.Services.AddScoped<IStaffQueryService, StaffQueryService>();
+builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
 
 builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
 builder.Services.AddCortexMediator([typeof(Program)]);

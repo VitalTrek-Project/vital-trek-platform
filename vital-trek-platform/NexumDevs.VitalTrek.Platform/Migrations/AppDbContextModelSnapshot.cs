@@ -1044,6 +1044,261 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                     b.ToTable("binnacle_readings");
                 });
 
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Aggregates.MedicalDataAccessLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("AccessedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("AccessedByStaffUserId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("TouristProfileId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TouristProfileId");
+
+                    b.ToTable("MedicalDataAccessLogs", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Aggregates.StaffPreferences", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("CriticalAlertsEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("NewBookingsEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("PendingRedemptionsEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("StaffPreferences", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Aggregates.StaffProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AgencyId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("ContactPhone")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("Position")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AgencyId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("StaffProfiles", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Aggregates.TouristPreferences", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("DietaryRestrictionsCsv")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("DietaryRestrictions");
+
+                    b.Property<bool>("ExpeditionRemindersEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("LoyaltyUpdatesEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("PreferredActivityTypesCsv")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("PreferredActivityTypes");
+
+                    b.Property<string>("PreferredDifficulty")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<bool>("ProfileVisibleToExpeditionMates")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("SafetyAlertsEnabled")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("TouristPreferences", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Aggregates.TouristProfile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Allergies")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("BloodType")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateOnly?>("DateOfBirth")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ExperienceLevel")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("IdentityDocumentNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("IdentityDocumentType")
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)");
+
+                    b.Property<string>("MedicalConditions")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("Medications")
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("Nationality")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("PhotoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("PreferredLanguage")
+                        .HasMaxLength(10)
+                        .HasColumnType("varchar(10)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("TouristProfiles", (string)null);
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Entities.EmergencyContact", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("Relationship")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<Guid>("TouristProfileId")
+                        .HasColumnType("char(36)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TouristProfileId");
+
+                    b.ToTable("EmergencyContacts", (string)null);
+                });
+
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Aggregates.Ticket", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1185,6 +1440,15 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                     b.Navigation("Expedition");
                 });
 
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Entities.EmergencyContact", b =>
+                {
+                    b.HasOne("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Aggregates.TouristProfile", null)
+                        .WithMany("EmergencyContacts")
+                        .HasForeignKey("TouristProfileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Entities.TicketReply", b =>
                 {
                     b.HasOne("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Aggregates.Ticket", null)
@@ -1192,6 +1456,11 @@ namespace NexumDevs.VitalTrek.Platform.Migrations
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Profiles.Domain.Model.Aggregates.TouristProfile", b =>
+                {
+                    b.Navigation("EmergencyContacts");
                 });
 
             modelBuilder.Entity("NexumDevs.VitalTrek.Platform.Support.Domain.Model.Aggregates.Ticket", b =>

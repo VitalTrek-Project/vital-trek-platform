@@ -13,6 +13,7 @@ using NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Entities;
 using NexumDevs.VitalTrek.Platform.Iot.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using NexumDevs.VitalTrek.Platform.Support.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using NexumDevs.VitalTrek.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
 namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
@@ -130,6 +131,7 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         builder.ApplyIoTConfiguration();
         builder.ApplySupportConfiguration();
         builder.ApplyIamConfiguration();
+        builder.ApplyProfilesConfiguration();
     }
     
     public DbSet<BinnacleReading> BinnacleReadings { get; set; }
