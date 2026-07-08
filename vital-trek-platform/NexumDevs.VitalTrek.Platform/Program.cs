@@ -91,6 +91,16 @@ using NexumDevs.VitalTrek.Platform.Profiles.Resources;
 using NexumDevs.VitalTrek.Platform.TourManagement.Application.Acl;
 using NexumDevs.VitalTrek.Platform.TourManagement.Interfaces.Acl;
 
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.OutboundServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Stripe.Configuration;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Stripe.Services;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
@@ -160,6 +170,34 @@ builder.Services.AddAuthentication(options =>
             ValidateIssuer = false,
             ValidateAudience = false,
             ClockSkew = TimeSpan.Zero
+        };
+        // Default JwtBearer challenge/forbid responses have no body; the frontend needs a
+        // predictable JSON shape to decide when to redirect to sign-in/sign-up.
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    status = StatusCodes.Status401Unauthorized,
+                    title = "Authentication required",
+                    detail = "Sign in or create an account to continue."
+                });
+            },
+            OnForbidden = async context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    status = StatusCodes.Status403Forbidden,
+                    title = "Forbidden",
+                    detail = "You do not have permission to perform this action."
+                });
+            }
         };
     });
 
@@ -315,6 +353,13 @@ builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 
 // TourManagement Acl facade (consumed by Profiles to authorize agency-staff reads)
 builder.Services.AddScoped<ITourManagementContextFacade, TourManagementContextFacade>();
+
+// Subscriptions Bounded Context
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+builder.Services.AddScoped<IPaymentGatewayService, StripePaymentGatewayService>();
 
 // Profiles Bounded Context
 builder.Services.AddSingleton<IStringLocalizer<ProfilesMessages>, StringLocalizer<ProfilesMessages>>();

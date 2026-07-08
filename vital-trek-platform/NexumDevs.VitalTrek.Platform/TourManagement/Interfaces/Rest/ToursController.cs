@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Localization;
 using NexumDevs.VitalTrek.Platform.TourManagement.Application.CommandServices;
@@ -116,6 +117,7 @@ public class ToursController : ControllerBase
     /// The specified tour was not found.
     /// </response>
     [HttpGet("{tourId:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetTourById(
         Guid tourId,
         CancellationToken cancellationToken)
@@ -151,6 +153,7 @@ public class ToursController : ControllerBase
     /// The tours were successfully retrieved.
     /// </response>
     [HttpGet("agency/{agencyId:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetAllToursByAgency(
         Guid agencyId,
         CancellationToken cancellationToken)
@@ -181,6 +184,7 @@ public class ToursController : ControllerBase
     /// The search was completed successfully.
     /// </response>
     [HttpGet("search")]
+    [AllowAnonymous]
     public async Task<IActionResult> SearchTours(
         [FromQuery] string term,
         CancellationToken cancellationToken)
