@@ -41,4 +41,17 @@ public class UserRepository(AppDbContext context) : BaseRepository<User>(context
     {
         return await Context.Set<User>().AnyAsync(user => user.Username.Equals(username), cancellationToken);
     }
+
+    /**
+     * <summary>
+     *     Find a user by its id
+     * </summary>
+     * <param name="id">The user id to search</param>
+     * <param name="cancellationToken">The cancellation token</param>
+     * <returns>The user</returns>
+     */
+    public async Task<User?> FindByIdAsync(Guid id, CancellationToken cancellationToken)
+    {
+        return await Context.Set<User>().FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
+    }
 }

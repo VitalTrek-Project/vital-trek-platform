@@ -1,8 +1,6 @@
 using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.Aggregates;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Resources;
 
-// Added for ArgumentNullException
-
 namespace NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Transform;
 
 /// <summary>
@@ -24,6 +22,6 @@ public static class UserResourceFromEntityAssembler
     {
         if (user == null)
             throw new ArgumentNullException(nameof(user), "User aggregate cannot be null when converting to resource.");
-        return new UserResource(user.Id, user.Username);
+        return new UserResource(user.Id, user.Username, user.Role.ToString(), user.AgencyId);
     }
 }

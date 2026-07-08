@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NexumDevs.VitalTrek.Platform.Dashboard.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Dashboard.Domain.Model.Queries;
 using NexumDevs.VitalTrek.Platform.Dashboard.Interfaces.Rest.Resources;
 using NexumDevs.VitalTrek.Platform.Dashboard.Interfaces.Rest.Transform;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.ValueObjects;
 using Swashbuckle.AspNetCore.Annotations;
 using ProblemDetailsFactory = NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
@@ -15,9 +17,9 @@ namespace NexumDevs.VitalTrek.Platform.Dashboard.Interfaces.Rest;
 /// Resources are nested hierarchically (e.g. admin/alerts/distribution, admin/expeditions/active)
 /// rather than hyphen-joined, and collections are addressed with plural nouns (tourists/{id}),
 /// matching the rest of the API (AlertsController -&gt; /alerts, ExpeditionsController -&gt; /expeditions).
-/// No [Authorize] here: the platform has no authentication wiring yet (see IAM TODOs across
-/// the codebase). agencyId/touristId are accepted as explicit parameters, same convention as
-/// TourManagement's GetAllToursByAgencyQuery — not enforced server-side yet.
+/// The admin/* endpoints are not yet scoped per-agency (there is no AgencyId on the underlying
+/// Alert/Expedition data), so they are restricted to the Agency role as a whole rather than to a
+/// single agency's data — narrowing that further requires adding AgencyId to those aggregates.
 /// </summary>
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -25,6 +27,7 @@ namespace NexumDevs.VitalTrek.Platform.Dashboard.Interfaces.Rest;
 [SwaggerTag("Available Dashboard endpoints")]
 public class DashboardController(IDashboardQueryService dashboardQueryService, ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
+    [Authorize(Roles = nameof(UserRole.Agency))]
     [HttpGet("admin/summary")]
     [SwaggerOperation(
         Summary = "Get admin dashboard KPI summary",
@@ -44,6 +47,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
         return Ok(DashboardResourceAssembler.ToResourceFromSummary(summary));
     }
 
+    [Authorize(Roles = nameof(UserRole.Agency))]
     [HttpGet("admin/alerts/distribution")]
     [SwaggerOperation(
         Summary = "Get alerts distribution",
@@ -63,6 +67,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
         return Ok(DashboardResourceAssembler.ToResourceFromDistribution(distribution));
     }
 
+    [Authorize(Roles = nameof(UserRole.Agency))]
     [HttpGet("admin/alerts/attention")]
     [SwaggerOperation(
         Summary = "Get alerts requiring attention",
@@ -78,6 +83,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
         return Ok(alerts.Select(DashboardResourceAssembler.ToAttentionResourceFromEntity));
     }
 
+    [Authorize(Roles = nameof(UserRole.Agency))]
     [HttpGet("admin/expeditions/timeseries")]
     [SwaggerOperation(
         Summary = "Get expeditions time series",
@@ -98,6 +104,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
         return Ok(points.Select(DashboardResourceAssembler.ToResourceFromTimeSeriesPoint));
     }
 
+    [Authorize(Roles = nameof(UserRole.Agency))]
     [HttpGet("admin/expeditions/active")]
     [SwaggerOperation(
         Summary = "Get expeditions in progress",

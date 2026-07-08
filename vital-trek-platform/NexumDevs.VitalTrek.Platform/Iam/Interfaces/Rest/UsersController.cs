@@ -1,17 +1,14 @@
 using System.Net.Mime;
 using NexumDevs.VitalTrek.Platform.Iam.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.Queries;
-using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Pipeline.Middleware.Attributes;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Resources;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Transform;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
-// For ProblemDetailsFactory
-
-// For IamError enum
 
 namespace NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest;
 
@@ -37,14 +34,14 @@ public class UsersController(
      * <param name="cancellationToken">The cancellation token.</param>
      * <returns>The user resource</returns>
      */
-    [HttpGet("{id}")]
+    [HttpGet("{id:guid}")]
     [SwaggerOperation(
         Summary = "Get a user by its id",
         Description = "Get a user by its id",
         OperationId = "GetUserById")]
     [SwaggerResponse(StatusCodes.Status200OK, "The user was found", typeof(UserResource))]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The user was not found")]
-    public async Task<IActionResult> GetUserById(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> GetUserById(Guid id, CancellationToken cancellationToken)
     {
         var getUserByIdQuery = new GetUserByIdQuery(id);
         var user = await userQueryService.Handle(getUserByIdQuery, cancellationToken);

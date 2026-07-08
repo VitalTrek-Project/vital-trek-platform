@@ -69,7 +69,7 @@ public class UserCommandService(
                 _localizer[nameof(IamError.UsernameAlreadyTaken), command.Username]);
 
         var hashedPassword = hashingService.HashPassword(command.Password);
-        var user = new User(command.Username, hashedPassword);
+        var user = new User(command.Username, hashedPassword, command.Role);
         try
         {
             await userRepository.AddAsync(user, cancellationToken);

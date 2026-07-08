@@ -7,7 +7,8 @@ namespace NexumDevs.VitalTrek.Platform.Iam.Application.Internal.OutboundServices
  *     The token service interface
  * </summary>
  * <remarks>
- *     This interface is used to generate and validate JWT tokens
+ *     This interface is used to generate JWT tokens. Token validation is delegated to ASP.NET Core's
+ *     standard JWT Bearer authentication handler, configured in Program.cs.
  * </remarks>
  */
 public interface ITokenService
@@ -20,13 +21,4 @@ public interface ITokenService
      * <returns>The generated token</returns>
      */
     string GenerateToken(User user);
-
-    /**
-     * <summary>
-     *     Validate a JWT token
-     * </summary>
-     * <param name="token">The token to validate</param>
-     * <returns>The user id if the token is valid, null otherwise</returns>
-     */
-    Task<int?> ValidateToken(string token);
 }

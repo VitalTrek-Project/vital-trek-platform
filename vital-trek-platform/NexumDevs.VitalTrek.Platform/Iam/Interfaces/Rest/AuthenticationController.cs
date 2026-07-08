@@ -1,21 +1,19 @@
 using System.Net.Mime;
 using NexumDevs.VitalTrek.Platform.Iam.Application.CommandServices;
-using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Pipeline.Middleware.Attributes;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Model;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.ValueObjects;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Resources;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Transform;
 using NexumDevs.VitalTrek.Platform.Iam.Resources;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
-// For IamError enum
-// Corrected using directive
-// For ProblemDetailsFactory
 
 namespace NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest;
 
-[Authorize]
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
@@ -64,7 +62,7 @@ public class AuthenticationController(
      * <summary>
      *     Sign up endpoint. It allows creating a new user
      * </summary>
-     * <param name="signUpResource">The sign-up resource containing username and password.</param>
+     * <param name="signUpResource">The sign-up resource containing username, password and role.</param>
      * <param name="cancellationToken">The cancellation token.</param>
      * <returns>A confirmation message on successful creation.</returns>
      */
@@ -79,6 +77,13 @@ public class AuthenticationController(
     public async Task<IActionResult> SignUp([FromBody] SignUpResource signUpResource,
         CancellationToken cancellationToken)
     {
+        if (!Enum.TryParse<UserRole>(signUpResource.Role, true, out _))
+            return problemDetailsFactory.CreateProblemDetails(
+                this,
+                StatusCodes.Status400BadRequest,
+                IamError.InvalidRole,
+                $"'{signUpResource.Role}' is not a valid role. Expected 'Tourist' or 'Agency'.");
+
         var signUpCommand = SignUpCommandFromResourceAssembler.ToCommandFromResource(signUpResource);
         var result = await userCommandService.Handle(signUpCommand, cancellationToken);
 

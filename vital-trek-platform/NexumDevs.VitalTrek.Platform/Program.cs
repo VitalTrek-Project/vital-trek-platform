@@ -22,6 +22,7 @@ using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Interfaces.AspNetCore.C
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Mediator.Cortex.Configuration;
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Pipeline.Filters;
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
 using NexumDevs.VitalTrek.Platform.TourManagement.Resources;
 using Cortex.Mediator.Commands;
@@ -63,16 +64,36 @@ using NexumDevs.VitalTrek.Platform.Dashboard.Application.Internal.QueryServices;
 using NexumDevs.VitalTrek.Platform.Dashboard.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Dashboard.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Dashboard.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
+using NexumDevs.VitalTrek.Platform.Iam.Application.Acl;
+using NexumDevs.VitalTrek.Platform.Iam.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.Internal.OutboundServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Hashing.BCrypt.Services;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Tokens.Jwt.Services;
+using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Acl;
+using NexumDevs.VitalTrek.Platform.Iam.Resources;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 // Added for ProblemDetailsFactory
 // Added for base ProblemDetailsFactory
-// Added for IamMessages
-// Added for ProfilesMessages
 using ProblemDetailsFactory = NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
-builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+builder.Services.AddControllers(options =>
+    {
+        options.Conventions.Add(new KebabCaseRouteNamingConvention());
+        options.Filters.Add<TenantOwnershipFilter>();
+    })
     .AddDataAnnotationsLocalization();
 
 builder.Services.AddProblemDetails();
@@ -104,6 +125,38 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 });
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+// JWT Bearer authentication
+var tokenSecret = builder.Configuration["TokenSettings:Secret"];
+if (string.IsNullOrWhiteSpace(tokenSecret))
+    throw new InvalidOperationException("TokenSettings:Secret is not set in the configuration.");
+
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenSecret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+// All endpoints require authentication by default; use [AllowAnonymous] for public ones (e.g. sign-in/sign-up).
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddSingleton<IStringLocalizer<ErrorMessages>, StringLocalizer<ErrorMessages>>();
 builder.Services.AddSingleton<IStringLocalizer<CommonMessages>, StringLocalizer<CommonMessages>>();
@@ -238,11 +291,14 @@ builder.Services.AddScoped<ISupportQueryService, SupportQueryService>();
 builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<IDashboardQueryService, DashboardQueryService>();
 
-// TokenSettings Configuration
-
-//builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
-
-
+// Iam Bounded Context
+builder.Services.AddSingleton<IStringLocalizer<IamMessages>, StringLocalizer<IamMessages>>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 
 builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
 builder.Services.AddCortexMediator([typeof(Program)]);
@@ -274,6 +330,7 @@ app.UseCors("AllowAllPolicy");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

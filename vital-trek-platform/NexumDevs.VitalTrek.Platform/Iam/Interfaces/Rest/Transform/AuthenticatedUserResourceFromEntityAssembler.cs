@@ -1,8 +1,6 @@
 using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.Aggregates;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Resources;
 
-// Added for ArgumentNullException
-
 namespace NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Transform;
 
 /// <summary>
@@ -37,6 +35,6 @@ public static class AuthenticatedUserResourceFromEntityAssembler
         if (string.IsNullOrEmpty(token))
             throw new ArgumentException("Token cannot be null or empty when creating authenticated user resource.",
                 nameof(token));
-        return new AuthenticatedUserResource(user.Id, user.Username, token);
+        return new AuthenticatedUserResource(user.Id, user.Username, user.Role.ToString(), user.AgencyId, token);
     }
 }

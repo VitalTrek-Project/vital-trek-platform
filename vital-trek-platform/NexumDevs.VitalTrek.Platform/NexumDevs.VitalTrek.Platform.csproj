@@ -6,6 +6,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <InvariantGlobalization>false</InvariantGlobalization>
         <LangVersion>14</LangVersion>
+        <!-- Skip generating the native apphost .exe launcher. On machines with Smart App
+             Control / WDAC enabled, that unsigned, freshly-built native executable is what
+             gets blocked (FileLoadException 0x800711C7). Without it, `dotnet run`/Rider
+             launch the app through the already-trusted, Microsoft-signed dotnet.exe muxer
+             instead, which loads the managed DLL via the CLR rather than a native stub. -->
+        <UseAppHost>false</UseAppHost>
     </PropertyGroup>
 
     <ItemGroup>

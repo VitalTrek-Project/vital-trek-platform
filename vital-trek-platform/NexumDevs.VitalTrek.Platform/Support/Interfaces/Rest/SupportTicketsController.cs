@@ -1,6 +1,8 @@
 using System.Net.Mime;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.ValueObjects;
 using NexumDevs.VitalTrek.Platform.Support.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Support.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Support.Domain;
@@ -65,6 +67,14 @@ public class SupportTicketsController(
     [SwaggerResponse(StatusCodes.Status200OK, "The tickets were found", typeof(IEnumerable<TicketResource>))]
     public async Task<IActionResult> GetTickets([FromQuery] Guid? userId, CancellationToken cancellationToken)
     {
+        // Tourists may only list their own tickets; only agency staff can browse the full queue.
+        if (User.FindFirstValue(ClaimTypes.Role) == nameof(UserRole.Tourist))
+        {
+            var callerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!userId.HasValue || !string.Equals(userId.Value.ToString(), callerId, StringComparison.OrdinalIgnoreCase))
+                return Forbid();
+        }
+
         var tickets = userId.HasValue
             ? await queryService.Handle(new GetTicketsByUserIdQuery(userId.Value), cancellationToken)
             : await queryService.Handle(new GetAllTicketsQuery(), cancellationToken);

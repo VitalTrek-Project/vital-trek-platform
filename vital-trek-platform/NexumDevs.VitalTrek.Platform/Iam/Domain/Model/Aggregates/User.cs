@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.ValueObjects;
 
 namespace NexumDevs.VitalTrek.Platform.Iam.Domain.Model.Aggregates;
 
@@ -10,14 +11,22 @@ namespace NexumDevs.VitalTrek.Platform.Iam.Domain.Model.Aggregates;
  *     This class is used to represent a user
  * </remarks>
  */
-public partial class User(string username, string passwordHash)
+public partial class User(string username, string passwordHash, UserRole role)
 {
-    public User() : this(string.Empty, string.Empty)
+    public User() : this(string.Empty, string.Empty, UserRole.Tourist)
     {
     }
 
-    public int Id { get; }
+    public Guid Id { get; private init; } = Guid.NewGuid();
     public string Username { get; private set; } = username;
+    public UserRole Role { get; private init; } = role;
+
+    /**
+     * <summary>
+     *     The agency this user belongs to. Only set when <see cref="Role" /> is <see cref="UserRole.Agency" />.
+     * </summary>
+     */
+    public Guid? AgencyId { get; private init; } = role == UserRole.Agency ? Guid.NewGuid() : null;
 
     [JsonIgnore] public string PasswordHash { get; private set; } = passwordHash;
 

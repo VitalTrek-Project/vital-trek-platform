@@ -1,7 +1,6 @@
 using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.Commands;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Model.ValueObjects;
 using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Resources;
-
-// Added for ArgumentNullException
 
 namespace NexumDevs.VitalTrek.Platform.Iam.Interfaces.Rest.Transform;
 
@@ -20,11 +19,15 @@ public static class SignUpCommandFromResourceAssembler
     ///     A new <see cref="SignUpCommand" /> instance.
     /// </returns>
     /// <exception cref="ArgumentNullException">Thrown if the input <paramref name="resource" /> is null.</exception>
+    /// <exception cref="ArgumentException">Thrown if <paramref name="resource" />'s role is not a valid role.</exception>
     public static SignUpCommand ToCommandFromResource(SignUpResource resource)
     {
         if (resource == null)
             throw new ArgumentNullException(nameof(resource),
                 "SignUpResource cannot be null when converting to command.");
-        return new SignUpCommand(resource.Username, resource.Password);
+        if (!Enum.TryParse<UserRole>(resource.Role, true, out var role))
+            throw new ArgumentException($"'{resource.Role}' is not a valid role. Expected 'Tourist' or 'Agency'.",
+                nameof(resource));
+        return new SignUpCommand(resource.Username, resource.Password, role);
     }
 }

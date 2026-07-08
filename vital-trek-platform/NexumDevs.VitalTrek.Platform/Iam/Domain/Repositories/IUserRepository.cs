@@ -32,4 +32,14 @@ public interface IUserRepository : IBaseRepository<User>
      * <returns>True if the user exists, false otherwise</returns>
      */
     Task<bool> ExistsByUsernameAsync(string username, CancellationToken cancellationToken);
+
+    /**
+     * <summary>
+     *     Find a user by its id
+     * </summary>
+     * <param name="id">The user id to search</param>
+     * <param name="cancellationToken">The cancellation token</param>
+     * <returns>The user</returns>
+     */
+    Task<User?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 }
