@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="ProfileNotFound" xml:space="preserve">
+    <value>No se encontró el perfil solicitado.</value>
+  </data>
+  <data name="ProfileAlreadyExists" xml:space="preserve">
+    <value>Ya existe un perfil para este usuario.</value>
+  </data>
+  <data name="InvalidProfileData" xml:space="preserve">
+    <value>El nombre completo es obligatorio.</value>
+  </data>
+  <data name="EmergencyContactNotFound" xml:space="preserve">
+    <value>No se encontró el contacto de emergencia solicitado.</value>
+  </data>
+  <data name="InvalidEmergencyContactData" xml:space="preserve">
+    <value>El nombre y el teléfono son obligatorios para un contacto de emergencia.</value>
+  </data>
+  <data name="PreferencesNotFound" xml:space="preserve">
+    <value>No se encontraron las preferencias solicitadas.</value>
+  </data>
+  <data name="StaffProfileNotFound" xml:space="preserve">
+    <value>No se encontró el perfil de staff solicitado.</value>
+  </data>
+  <data name="StaffProfileAlreadyExists" xml:space="preserve">
+    <value>Ya existe un perfil de staff para este usuario.</value>
+  </data>
+  <data name="StaffPreferencesNotFound" xml:space="preserve">
+    <value>No se encontraron las preferencias de staff solicitadas.</value>
+  </data>
+  <data name="UnauthorizedProfileAccess" xml:space="preserve">
+    <value>Este turista no tiene reservas con tu agencia.</value>
+  </data>
+</root>
