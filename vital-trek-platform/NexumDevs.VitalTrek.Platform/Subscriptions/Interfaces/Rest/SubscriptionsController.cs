@@ -51,7 +51,7 @@ public class SubscriptionsController(
         if (!Enum.TryParse<SubscriptionPlan>(resource.Plan, true, out var plan))
             return problemDetailsFactory.CreateProblemDetails(
                 this, StatusCodes.Status400BadRequest, SubscriptionsError.InvalidPlan,
-                $"'{resource.Plan}' is not a valid plan. Expected 'Monthly' or 'Annual'.");
+                $"'{resource.Plan}' is not a valid plan. Expected one of: {string.Join(", ", Enum.GetNames<SubscriptionPlan>())}.");
 
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var result = await commandService.Handle(new CreateCheckoutSessionCommand(userId, plan), cancellationToken);

@@ -82,9 +82,8 @@ public class SubscriptionCommandService(
         if (subscription.Status != SubscriptionStatus.PendingPayment)
             return Result.Success();
 
-        var endDate = subscription.Plan == SubscriptionPlan.Monthly
-            ? command.StartDate.AddMonths(1)
-            : command.StartDate.AddYears(1);
+        // All tiers bill monthly today (see SubscriptionPlan) — revisit if an annual tier returns.
+        var endDate = command.StartDate.AddMonths(1);
 
         subscription.Activate(command.StripeSubscriptionId, command.StartDate, endDate);
         subscriptionRepository.Update(subscription);

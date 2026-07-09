@@ -2,11 +2,14 @@ namespace NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.ValueObjects;
 
 /**
  * <summary>
- *     The billing plan a subscription is on.
+ *     The paid tier a subscription is on. All tiers bill monthly today — there is no
+ *     annual option. Explorer (the free trekker tier) is not represented here since it
+ *     never creates a <see cref="Aggregates.Subscription" /> row.
  * </summary>
  */
 public enum SubscriptionPlan
 {
-    Monthly,
-    Annual
+    TrekkerAdventurer,
+    AgencyBase,
+    AgencyPro
 }
