@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.Services;
 using NexumDevs.VitalTrek.Platform.Engagement.Domain;
@@ -21,6 +22,22 @@ public class RedemptionCommandService(
     IUnitOfWork unitOfWork) : IRedemptionCommandService
 {
     public async Task<Redemption> Handle(RedeemRewardCommand command, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await RedeemInternalAsync(command, cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Reward.Stock / GamificationProfile.TotalPoints are concurrency tokens (see
+            // ModelBuilderExtensions): a concurrent redemption changed one of them between our
+            // read and this SaveChanges, so the balance/stock check above may now be stale.
+            // Surface as a clean, retryable 409 instead of letting this bubble as a 500.
+            throw new EngagementError(EngagementErrors.ConcurrentModification);
+        }
+    }
+
+    private async Task<Redemption> RedeemInternalAsync(RedeemRewardCommand command, CancellationToken cancellationToken)
     {
         var reward = await rewardRepository.FindByIdAndAgencyAsync(command.RewardId, command.AgencyId, cancellationToken)
                      ?? throw new EngagementError(EngagementErrors.RewardNotFound);

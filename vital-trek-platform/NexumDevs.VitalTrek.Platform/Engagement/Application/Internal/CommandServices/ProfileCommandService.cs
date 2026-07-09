@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.Services;
 using NexumDevs.VitalTrek.Platform.Engagement.Domain;
@@ -75,7 +76,17 @@ public class ProfileCommandService(
         profile.RecalculateTier(tiers);
 
         profileRepository.Update(profile);
-        await unitOfWork.CompleteAsync(cancellationToken);
+        try
+        {
+            await unitOfWork.CompleteAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // GamificationProfile.TotalPoints is a concurrency token: a concurrent points event
+            // for the same profile changed it between our read and this save. Surface as a
+            // clean, retryable 409 instead of a 500.
+            throw new EngagementError(EngagementErrors.ConcurrentModification);
+        }
 
         await notificationService.Handle(new CreateNotificationCommand(
             touristId, agencyId, NotificationType.PointsEarned,

@@ -27,6 +27,12 @@ public static class ModelBuilderExtensions
             entity.HasKey(p => p.Id);
             entity.HasIndex(p => new { p.TouristId, p.AgencyId }).IsUnique();
             entity.Property(p => p.TotalPoints).IsRequired();
+            // Optimistic concurrency: two concurrent redemptions/point-events for the same
+            // profile both read the same TotalPoints, both pass their balance check, and both
+            // would otherwise commit — overspending the balance. Marking the raced-on column
+            // itself as the concurrency token makes the second SaveChanges affect 0 rows and
+            // throw DbUpdateConcurrencyException instead of silently overspending.
+            entity.Property(p => p.TotalPoints).IsConcurrencyToken();
         });
 
         builder.Entity<PointsTransaction>(entity =>
@@ -131,6 +137,9 @@ public static class ModelBuilderExtensions
             entity.HasIndex(r => r.AgencyId);
             entity.Property(r => r.Name).HasMaxLength(200).IsRequired();
             entity.Property(r => r.Description).HasMaxLength(1000);
+            // Optimistic concurrency on Stock: see the same comment on GamificationProfile's
+            // TotalPoints above — prevents overselling limited stock under concurrent redemptions.
+            entity.Property(r => r.Stock).IsConcurrencyToken();
         });
 
         builder.Entity<Redemption>(entity =>

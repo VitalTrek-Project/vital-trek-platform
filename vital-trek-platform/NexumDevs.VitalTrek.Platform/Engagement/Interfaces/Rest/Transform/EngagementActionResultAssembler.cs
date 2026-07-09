@@ -32,7 +32,8 @@ public static class EngagementActionResultAssembler
         EngagementErrors.InsufficientBalance,
         EngagementErrors.InsufficientStock,
         EngagementErrors.RewardInactive,
-        EngagementErrors.SelfReferralNotAllowed
+        EngagementErrors.SelfReferralNotAllowed,
+        EngagementErrors.ConcurrentModification
     ];
 
     public static int ResolveStatusCode(EngagementError error)

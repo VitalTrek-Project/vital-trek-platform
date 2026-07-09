@@ -66,4 +66,7 @@
   <data name="InvalidEventType" xml:space="preserve">
     <value>The points event type is not recognized.</value>
   </data>
+  <data name="ConcurrentModification" xml:space="preserve">
+    <value>This was modified by another request at the same time. Please try again.</value>
+  </data>
 </root>

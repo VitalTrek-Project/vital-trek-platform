@@ -23,9 +23,12 @@ public record PointsTransactionResource(
 /// <summary>
 /// <see cref="Type"/> must be one of ExpeditionCompleted, ExpeditionBooked, ReferralBonus,
 /// ReviewSubmitted — the only events the backend resolves a per-action point value for.
-/// The caller never supplies a point amount.
+/// The caller never supplies a point amount. <see cref="SourceId"/> is required: it's the only
+/// idempotency key the duplicate-transaction check has (ProfileCommandService.RecordEventInternalAsync
+/// skips that check entirely when it's null/empty), so an optional SourceId would let a
+/// retried/duplicated request award points for the same event indefinitely.
 /// </summary>
-public record RecordPointsEventResource([Required] string Type, string? SourceId);
+public record RecordPointsEventResource([Required] string Type, [Required] string SourceId);
 
 public record AwardedBadgeResource(Guid Id, Guid BadgeDefinitionId, string Code, string Name, string Description, DateTimeOffset AwardedAt);
 

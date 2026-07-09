@@ -29,4 +29,5 @@ public static class EngagementErrors
     public const string DuplicateReview = "DuplicateReview";
     public const string NotificationNotFound = "NotificationNotFound";
     public const string InvalidEventType = "InvalidEventType";
+    public const string ConcurrentModification = "ConcurrentModification";
 }
