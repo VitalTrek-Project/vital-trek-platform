@@ -2,6 +2,7 @@ using NexumDevs.VitalTrek.Platform.Monitoring.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Model.Commands;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Model.Entities;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Services;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Shared.Application.Model;
 using NexumDevs.VitalTrek.Platform.Shared.Domain.Repositories;
@@ -13,6 +14,7 @@ namespace NexumDevs.VitalTrek.Platform.Monitoring.Application.Internal.CommandSe
 
 public class VitalSignReadingCommandService(
     IVitalSignReadingRepository vitalSignReadingRepository,
+    IAnomalyDetectionService anomalyDetectionService,
     IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : IVitalSignReadingCommandService
@@ -32,6 +34,12 @@ public class VitalSignReadingCommandService(
         {
             await vitalSignReadingRepository.AddAsync(vitalSignReading, cancellationToken);
             await unitOfWork.CompleteAsync(cancellationToken);
+
+            // Was fully implemented (ThresholdAnomalyDetectionService.DetectVitalAnomalyAsync)
+            // but never called from anywhere — no critical-vitals alert ever fired. Runs after
+            // the reading itself is safely persisted, in its own unit of work.
+            await anomalyDetectionService.DetectVitalAnomalyAsync(vitalSignReading, cancellationToken);
+
             return Result<VitalSignReading>.Success(vitalSignReading);
         }
         catch (OperationCanceledException)
