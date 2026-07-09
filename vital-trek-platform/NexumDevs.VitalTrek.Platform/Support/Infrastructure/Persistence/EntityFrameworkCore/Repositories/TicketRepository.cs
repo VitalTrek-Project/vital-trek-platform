@@ -58,4 +58,13 @@ public class TicketRepository : BaseRepository<Ticket>, ITicketRepository
             .Include(t => t.Replies)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<Guid?> FindOwnerUserIdAsync(Guid ticketId, CancellationToken cancellationToken)
+    {
+        return await Context.Set<Ticket>()
+            .AsNoTracking()
+            .Where(t => t.Id == ticketId)
+            .Select(t => (Guid?)t.UserId)
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }

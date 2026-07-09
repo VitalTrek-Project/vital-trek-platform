@@ -89,12 +89,16 @@ public class SupportTicketsController(
         Description = "Get a support ticket by its id",
         OperationId = "GetTicketById")]
     [SwaggerResponse(StatusCodes.Status200OK, "The ticket was found", typeof(TicketResource))]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "A tourist tried to read another user's ticket")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The ticket was not found")]
     public async Task<IActionResult> GetTicketById([FromRoute] Guid ticketId, CancellationToken cancellationToken)
     {
         var ticket = await queryService.Handle(new GetTicketByIdQuery(ticketId), cancellationToken);
         if (ticket is null)
             return ToProblemDetails(new SupportError(SupportErrors.TicketNotFound));
+
+        if (IsForbiddenForTourist(ticket.UserId))
+            return Forbid();
 
         return Ok(TicketResourceFromEntityAssembler.ToResourceFromEntity(ticket));
     }
@@ -106,12 +110,23 @@ public class SupportTicketsController(
         OperationId = "UpdateTicket")]
     [SwaggerResponse(StatusCodes.Status200OK, "The ticket was updated", typeof(TicketResource))]
     [SwaggerResponse(StatusCodes.Status400BadRequest, "The status or priority value is not recognized")]
+    [SwaggerResponse(StatusCodes.Status403Forbidden, "A tourist tried to update another user's ticket")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The ticket was not found")]
     public async Task<IActionResult> UpdateTicket(
         [FromRoute] Guid ticketId,
         [FromBody] UpdateTicketResource resource,
         CancellationToken cancellationToken)
     {
+        // Untracked owner-id-only lookup (GetTicketOwnerUserIdQuery), not the full tracking
+        // GetTicketByIdQuery — the command handler below does its own tracking fetch of the
+        // same ticket, and a second tracking fetch here would confuse EF's change detection.
+        var ownerUserId = await queryService.Handle(new GetTicketOwnerUserIdQuery(ticketId), cancellationToken);
+        if (ownerUserId is null)
+            return ToProblemDetails(new SupportError(SupportErrors.TicketNotFound));
+
+        if (IsForbiddenForTourist(ownerUserId.Value))
+            return Forbid();
+
         try
         {
             var command = new UpdateTicketCommand(ticketId, resource.Status, resource.Priority);
@@ -122,6 +137,17 @@ public class SupportTicketsController(
         {
             return ToProblemDetails(error);
         }
+    }
+
+    /// <summary>
+    /// A Tourist caller may only act on their own tickets; Guide/Support callers are unrestricted
+    /// (this mirrors the ownership check already applied in <see cref="GetTickets" />).
+    /// </summary>
+    private bool IsForbiddenForTourist(Guid ticketOwnerUserId)
+    {
+        return User.FindFirstValue(ClaimTypes.Role) == nameof(UserRole.Tourist)
+            && !string.Equals(ticketOwnerUserId.ToString(), User.FindFirstValue(ClaimTypes.NameIdentifier),
+                StringComparison.OrdinalIgnoreCase);
     }
 
     private IActionResult ToProblemDetails(SupportError error)

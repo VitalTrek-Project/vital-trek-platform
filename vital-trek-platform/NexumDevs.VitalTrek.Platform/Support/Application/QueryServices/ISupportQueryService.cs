@@ -42,4 +42,11 @@ public interface ISupportQueryService
     /// <returns>The replies posted on the specified ticket.</returns>
     /// <exception cref="Domain.SupportError">Thrown when the ticket cannot be found.</exception>
     Task<IEnumerable<TicketReply>> Handle(GetTicketRepliesByTicketIdQuery query, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Reads only a ticket's owning user id, for ownership checks — see
+    /// <see cref="GetTicketOwnerUserIdQuery" />.
+    /// </summary>
+    /// <returns>The owning user id, or <c>null</c> if no ticket has this id.</returns>
+    Task<Guid?> Handle(GetTicketOwnerUserIdQuery query, CancellationToken cancellationToken);
 }

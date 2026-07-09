@@ -52,4 +52,10 @@ public class SupportQueryService : ISupportQueryService
 
         return ticket.Replies;
     }
+
+    /// <inheritdoc />
+    public async Task<Guid?> Handle(GetTicketOwnerUserIdQuery query, CancellationToken cancellationToken)
+    {
+        return await _ticketRepository.FindOwnerUserIdAsync(query.TicketId, cancellationToken);
+    }
 }

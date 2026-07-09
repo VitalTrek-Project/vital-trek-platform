@@ -23,4 +23,13 @@ public interface ITicketRepository : IBaseRepository<Ticket>
     /// <param name="cancellationToken">A token used to cancel the operation.</param>
     /// <returns>The tickets opened by the specified user.</returns>
     Task<IEnumerable<Ticket>> FindByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+
+    /// <summary>
+    /// Reads only the owning user id of a ticket, untracked. Used for ownership checks that
+    /// happen before a command handler does its own tracking <see cref="FindByIdAsync" /> —
+    /// using that tracking method here too would fetch/track the same ticket twice in one
+    /// request, which confuses EF's change detection for anything added to it afterward.
+    /// </summary>
+    /// <returns>The owning user id, or <c>null</c> if no ticket has this id.</returns>
+    Task<Guid?> FindOwnerUserIdAsync(Guid ticketId, CancellationToken cancellationToken);
 }

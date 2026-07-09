@@ -57,7 +57,12 @@ public class SupportCommandService : ISupportCommandService
 
         var reply = ticket.AddReply(command.AuthorName, command.AuthorMode, command.Message);
 
-        _ticketRepository.Update(ticket);
+        // No repository.Update(ticket) here: the ticket is already tracked (fetched via
+        // FindByIdAsync), and calling Update() re-marks the whole graph as Modified — including
+        // the brand-new TicketReply, which has a non-default client-generated Guid key. EF then
+        // can't tell it apart from a pre-existing row and emits an UPDATE instead of an INSERT,
+        // which affects 0 rows and throws DbUpdateConcurrencyException. Letting EF's own
+        // change-detection run (via SaveChanges below) correctly marks it Added.
         await _unitOfWork.CompleteAsync(cancellationToken);
 
         return reply;

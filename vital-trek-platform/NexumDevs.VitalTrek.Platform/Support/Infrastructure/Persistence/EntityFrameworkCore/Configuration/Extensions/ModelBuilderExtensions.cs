@@ -52,6 +52,12 @@ public static class ModelBuilderExtensions
             entity.ToTable("TicketReplies");
 
             entity.HasKey(r => r.Id);
+            // Id is always assigned client-side (Guid.NewGuid() in the constructor), never by
+            // the database. Without this, EF's default Guid-key convention (ValueGeneratedOnAdd)
+            // makes it ambiguous whether a non-default Id means "new" or "existing", and a
+            // TicketReply added to an already-tracked Ticket.Replies collection gets emitted as
+            // an UPDATE instead of an INSERT — 0 rows affected, DbUpdateConcurrencyException.
+            entity.Property(r => r.Id).ValueGeneratedNever();
 
             entity.HasIndex(r => r.TicketId);
 
