@@ -5,6 +5,7 @@ using NexumDevs.VitalTrek.Platform.TourManagement.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.TourManagement.Application.QueryService;
 using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model;
 using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Commands;
+using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Errors;
 using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Queries;
 using NexumDevs.VitalTrek.Platform.TourManagement.Interfaces.Rest.Resources;
 using NexumDevs.VitalTrek.Platform.TourManagement.Interfaces.Rest.Transform;
@@ -88,9 +89,16 @@ public class TourAssignmentsController : ControllerBase
         }
         catch (TourManagementError error)
         {
-            return BadRequest(_problemDetailsFactory.CreateProblemDetails(
+            // Unlike the other actions in this controller (which only ever throw one error
+            // kind), AssignTourist can fail with TourNotFound as well as several validation
+            // errors — each needs its own status code, not a single hardcoded 400.
+            var statusCode = error.ErrorCode == TourManagementErrors.TourNotFound
+                ? StatusCodes.Status404NotFound
+                : StatusCodes.Status400BadRequest;
+
+            return StatusCode(statusCode, _problemDetailsFactory.CreateProblemDetails(
                 HttpContext,
-                StatusCodes.Status400BadRequest,
+                statusCode,
                 detail: _errorLocalizer[error.ErrorCode]));
         }
     }

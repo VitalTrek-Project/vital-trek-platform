@@ -261,8 +261,16 @@ public class Tour
         if (activeAssignments >= Capacity)
             throw new TourManagementError(TourManagementErrors.TourCapacityExceeded, "El tour ha alcanzado su capacidad máxima.");
 
-        var assignment = new TourAssignment(Id, touristId);
-        _assignments.Add(assignment);
+        // Reuse a previously cancelled assignment for this tourist, if any, instead of inserting
+        // a new row: (TourId, TouristId) is unique in the database, so a second row for the same
+        // pair would fail with an unhandled DbUpdateException on save.
+        var cancelled = _assignments.FirstOrDefault(a => a.TouristId == touristId && a.Status == EAssignmentStatus.Cancelled);
+        var assignment = cancelled?.Reactivate();
+        if (assignment is null)
+        {
+            assignment = new TourAssignment(Id, touristId);
+            _assignments.Add(assignment);
+        }
 
         _domainEvents.Add(new TouristAssignedEvent(Id, touristId, assignment.AssignedAt));
         return assignment;

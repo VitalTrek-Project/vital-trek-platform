@@ -23,6 +23,11 @@ public static class TourManagementErrors
     public const string InvalidTourCapacity = "InvalidTourCapacity";
 
     /// <summary>
+    /// Error raised when the specified tour difficulty is not a recognized value.
+    /// </summary>
+    public const string InvalidDifficulty = "InvalidDifficulty";
+
+    /// <summary>
     /// Error raised when the tour cannot be updated in its current state.
     /// </summary>
     public const string TourCannotBeUpdated = "TourCannotBeUpdated";

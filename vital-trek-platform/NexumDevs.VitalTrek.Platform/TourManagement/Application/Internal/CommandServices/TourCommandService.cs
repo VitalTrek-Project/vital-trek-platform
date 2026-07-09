@@ -150,9 +150,17 @@ public class TourCommandService : ITourCommandService
         if (exists)
             throw new TourManagementError(TourManagementErrors.TouristAlreadyAssigned, _localizer[TourManagementErrors.TouristAlreadyAssigned]);
 
+        // AssignTourist() either adds a brand-new TourAssignment to tour's tracked Assignments
+        // collection, or reactivates an existing (cancelled) one already in it — capture the
+        // "before" ids to tell which happened.
+        var priorAssignmentIds = tour.Assignments.Select(a => a.Id).ToHashSet();
         var assignment = tour.AssignTourist(command.TouristId);
 
-        await _assignmentRepository.AddAsync(assignment, cancellationToken);
+        // Only add it explicitly when it's genuinely new: an explicit AddAsync on a reactivated
+        // (already-persisted) assignment would try to re-insert it and violate its primary key.
+        if (!priorAssignmentIds.Contains(assignment.Id))
+            await _assignmentRepository.AddAsync(assignment, cancellationToken);
+
         await _unitOfWork.CompleteAsync(cancellationToken);
 
         tour.ClearDomainEvents();
