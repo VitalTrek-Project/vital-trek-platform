@@ -37,15 +37,17 @@ public class VitalSignReadingsController(
     public async Task<IActionResult> RecordVitalSignReading([FromBody] RecordVitalSignsCommand command, CancellationToken cancellationToken)
     {
         var result = await vitalSignReadingCommandService.Handle(command, cancellationToken);
-        if (result.IsFailure)
-        {
-            return _problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status400BadRequest, result.Error, result.Message);
-        }
-        var resource = VitalSignReadingResourceFromEntityAssembler.ToResourceFromEntity(result.Value!);
-        return CreatedAtAction(nameof(GetVitalSignReadingsByExpedition), new { expeditionId = resource.ExpeditionId }, resource);
+
+        return MonitoringActionResultAssembler.ToActionResultFromResult(
+            this, result, _problemDetailsFactory,
+            reading =>
+            {
+                var resource = VitalSignReadingResourceFromEntityAssembler.ToResourceFromEntity(reading);
+                return CreatedAtAction(nameof(GetVitalSignReadingsByExpedition), new { expeditionId = resource.ExpeditionId }, resource);
+            });
     }
 
-    [HttpGet("expedition/{expeditionId:int}")]
+    [HttpGet("/api/v1/expeditions/{expeditionId:int}/vital-sign-readings")]
     [SwaggerOperation(
         Summary = "Get vital sign readings by expedition",
         Description = "Get all vital sign readings for a specific expedition",

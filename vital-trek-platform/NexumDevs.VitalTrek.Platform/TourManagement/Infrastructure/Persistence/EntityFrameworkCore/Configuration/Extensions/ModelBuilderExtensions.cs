@@ -25,6 +25,7 @@ public static class ModelBuilderExtensions
             entity.ToTable("Tours");
 
             entity.HasKey(t => t.Id);
+            entity.Property(t => t.Id).ValueGeneratedNever();
 
             entity.Property(t => t.Title)
                 .IsRequired()
@@ -70,6 +71,11 @@ public static class ModelBuilderExtensions
             entity.ToTable("TourCheckpoints");
 
             entity.HasKey(c => c.Id);
+            // Client-generated Guid, added into an already-tracked Tour.Checkpoints collection
+            // — see the identical comment on Support's TicketReply.Id for why this is required
+            // (without it, EF's default Guid-key convention emits an UPDATE instead of an
+            // INSERT for a brand-new checkpoint).
+            entity.Property(c => c.Id).ValueGeneratedNever();
 
             entity.Property(c => c.Name)
                 .IsRequired()
@@ -87,6 +93,12 @@ public static class ModelBuilderExtensions
             entity.ToTable("TourAssignments");
 
             entity.HasKey(a => a.Id);
+            // Same reasoning as Checkpoint.Id above — this is what actually caused the
+            // "assigning a tourist emits an UPDATE instead of an INSERT" bug in
+            // TourCommandService.Handle(AssignTouristCommand). The conditional AddAsync there
+            // (only for genuinely-new assignments) still stands as defense in depth, but this
+            // is the real fix — without it, even that explicit AddAsync path could misbehave.
+            entity.Property(a => a.Id).ValueGeneratedNever();
 
             entity.Property(a => a.Status)
                 .HasConversion<string>()

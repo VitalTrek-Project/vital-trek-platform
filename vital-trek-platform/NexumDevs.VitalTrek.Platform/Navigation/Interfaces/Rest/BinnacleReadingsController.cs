@@ -46,7 +46,7 @@ public class BinnacleReadingsController(
             resource);
     }
 
-    [HttpGet("expedition/{expeditionId:int}")]
+    [HttpGet("/api/v1/expeditions/{expeditionId:int}/binnacle-readings")]
     [SwaggerOperation(
         Summary = "Get binnacle readings by expedition",
         Description = "Get all binnacle readings for a specific expedition",

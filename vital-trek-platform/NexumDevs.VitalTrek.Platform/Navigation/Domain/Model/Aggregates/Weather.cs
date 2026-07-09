@@ -15,6 +15,7 @@ public partial class Weather
     public Weather(CreateWeatherCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
+        ExpeditionId = command.ExpeditionId;
         TemperatureCelsius = command.TemperatureCelsius;
         Condition = command.Condition;
         Humidity = command.Humidity;

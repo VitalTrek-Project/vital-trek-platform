@@ -10,6 +10,7 @@ using NexumDevs.VitalTrek.Platform.Monitoring.Infrastructure.Services;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.CommandServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Engagement.Application.Internal.Services;
 using NexumDevs.VitalTrek.Platform.Engagement.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Engagement.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Engagement.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
@@ -21,6 +22,7 @@ using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Interfaces.AspNetCore.C
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Mediator.Cortex.Configuration;
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Pipeline.Filters;
 using NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Pipeline.Middleware.Extensions;
 using NexumDevs.VitalTrek.Platform.TourManagement.Resources;
 using Cortex.Mediator.Commands;
@@ -49,16 +51,73 @@ using NexumDevs.VitalTrek.Platform.Iot.Application.Internal.QueryServices;
 using NexumDevs.VitalTrek.Platform.Iot.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Iot.Domain.Repositories;
 using NexumDevs.VitalTrek.Platform.Iot.Infrastructure.Persistence.EFC.Repositories;
+
+using NexumDevs.VitalTrek.Platform.Support.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Support.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Support.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Support.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Support.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Support.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Support.Resources;
+
+using NexumDevs.VitalTrek.Platform.Dashboard.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Dashboard.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Dashboard.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Dashboard.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
+using NexumDevs.VitalTrek.Platform.Iam.Application.Acl;
+using NexumDevs.VitalTrek.Platform.Iam.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.Internal.OutboundServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Iam.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Iam.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Hashing.BCrypt.Services;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Tokens.Jwt.Configuration;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Tokens.Jwt.Services;
+using NexumDevs.VitalTrek.Platform.Iam.Interfaces.Acl;
+using NexumDevs.VitalTrek.Platform.Iam.Resources;
+
+using NexumDevs.VitalTrek.Platform.Profiles.Application.Acl;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Profiles.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+using NexumDevs.VitalTrek.Platform.Profiles.Interfaces.Acl;
+using NexumDevs.VitalTrek.Platform.Profiles.Resources;
+using NexumDevs.VitalTrek.Platform.TourManagement.Application.Acl;
+using NexumDevs.VitalTrek.Platform.TourManagement.Interfaces.Acl;
+
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.CommandServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.CommandServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.OutboundServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.QueryServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Repositories;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Mock.Configuration;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Mock.Services;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 // Added for ProblemDetailsFactory
 // Added for base ProblemDetailsFactory
-// Added for IamMessages
-// Added for ProfilesMessages
 using ProblemDetailsFactory = NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails.ProblemDetailsFactory;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
-builder.Services.AddControllers(options => options.Conventions.Add(new KebabCaseRouteNamingConvention()))
+builder.Services.AddControllers(options =>
+    {
+        options.Conventions.Add(new KebabCaseRouteNamingConvention());
+        options.Filters.Add<TenantOwnershipFilter>();
+    })
     .AddDataAnnotationsLocalization();
 
 builder.Services.AddProblemDetails();
@@ -90,6 +149,66 @@ builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
 });
 
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
+// JWT Bearer authentication
+var tokenSecret = builder.Configuration["TokenSettings:Secret"];
+if (string.IsNullOrWhiteSpace(tokenSecret))
+    throw new InvalidOperationException("TokenSettings:Secret is not set in the configuration.");
+
+builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(tokenSecret)),
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ClockSkew = TimeSpan.Zero
+        };
+        // Default JwtBearer challenge/forbid responses have no body; the frontend needs a
+        // predictable JSON shape to decide when to redirect to sign-in/sign-up.
+        options.Events = new JwtBearerEvents
+        {
+            OnChallenge = async context =>
+            {
+                context.HandleResponse();
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    status = StatusCodes.Status401Unauthorized,
+                    title = "Authentication required",
+                    detail = "Sign in or create an account to continue."
+                });
+            },
+            OnForbidden = async context =>
+            {
+                context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                context.Response.ContentType = "application/json";
+                await context.Response.WriteAsJsonAsync(new
+                {
+                    status = StatusCodes.Status403Forbidden,
+                    title = "Forbidden",
+                    detail = "You do not have permission to perform this action."
+                });
+            }
+        };
+    });
+
+// All endpoints require authentication by default; use [AllowAnonymous] for public ones (e.g. sign-in/sign-up).
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 builder.Services.AddSingleton<IStringLocalizer<ErrorMessages>, StringLocalizer<ErrorMessages>>();
 builder.Services.AddSingleton<IStringLocalizer<CommonMessages>, StringLocalizer<CommonMessages>>();
@@ -128,7 +247,7 @@ builder.Services.AddSwaggerGen(options =>
         Scheme = "bearer"
     });
     options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-        { [new OpenApiSecuritySchemeReference("bearer", document)] = [] });
+        { [new OpenApiSecuritySchemeReference("Bearer", document)] = [] });
     options.EnableAnnotations();
 });
 
@@ -183,19 +302,82 @@ builder.Services.AddScoped<IIoTDeviceCommandService, IoTDeviceCommandService>();
 builder.Services.AddScoped<ISensorReadingCommandService, SensorReadingCommandService>();
 builder.Services.AddScoped<IIoTDeviceQueryService, IoTDeviceQueryService>();
 builder.Services.AddScoped<ISensorReadingQueryService, SensorReadingQueryService>();
-// Engagement Bounded Context
-builder.Services.AddScoped<IGamificationProfileRepository, GamificationProfileRepository>();
-builder.Services.AddScoped<IStringLocalizer>(sp =>
-    sp.GetRequiredService<IStringLocalizer<EngagementMessages>>());
+// Engagement (Loyalty) Bounded Context
 builder.Services.AddSingleton<IStringLocalizer<EngagementMessages>, StringLocalizer<EngagementMessages>>();
-builder.Services.AddScoped<IEngagementCommandService, EngagementCommandService>();
-builder.Services.AddScoped<IEngagementQueryService, EngagementQueryService>();
 
-// TokenSettings Configuration
+builder.Services.AddScoped<IGamificationProfileRepository, GamificationProfileRepository>();
+builder.Services.AddScoped<IPointsTransactionRepository, PointsTransactionRepository>();
+builder.Services.AddScoped<ILoyaltyProgramRepository, LoyaltyProgramRepository>();
+builder.Services.AddScoped<ILoyaltyTierRepository, LoyaltyTierRepository>();
+builder.Services.AddScoped<IRewardRepository, RewardRepository>();
+builder.Services.AddScoped<IRedemptionRepository, RedemptionRepository>();
+builder.Services.AddScoped<IReferralCodeRepository, ReferralCodeRepository>();
+builder.Services.AddScoped<IReferralRepository, ReferralRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<IBadgeDefinitionRepository, BadgeDefinitionRepository>();
+builder.Services.AddScoped<IAwardedBadgeRepository, AwardedBadgeRepository>();
+builder.Services.AddScoped<IInAppNotificationRepository, InAppNotificationRepository>();
 
-//builder.Services.Configure<TokenSettings>(builder.Configuration.GetSection("TokenSettings"));
+builder.Services.AddScoped<PointsReconciler>();
 
+builder.Services.AddScoped<IProgramCommandService, ProgramCommandService>();
+builder.Services.AddScoped<IProgramQueryService, ProgramQueryService>();
+builder.Services.AddScoped<IProfileCommandService, ProfileCommandService>();
+builder.Services.AddScoped<IProfileQueryService, ProfileQueryService>();
+builder.Services.AddScoped<IRewardCommandService, RewardCommandService>();
+builder.Services.AddScoped<IRewardQueryService, RewardQueryService>();
+builder.Services.AddScoped<IRedemptionCommandService, RedemptionCommandService>();
+builder.Services.AddScoped<IRedemptionQueryService, RedemptionQueryService>();
+builder.Services.AddScoped<IReferralCommandService, ReferralCommandService>();
+builder.Services.AddScoped<IBadgeCommandService, BadgeCommandService>();
+builder.Services.AddScoped<IBadgeQueryService, BadgeQueryService>();
+builder.Services.AddScoped<INotificationCommandService, NotificationCommandService>();
+builder.Services.AddScoped<INotificationQueryService, NotificationQueryService>();
+builder.Services.AddScoped<IMetricsQueryService, MetricsQueryService>();
+// Support Bounded Context
+builder.Services.AddScoped<ITicketRepository, TicketRepository>();
+builder.Services.AddSingleton<IStringLocalizer<SupportMessages>, StringLocalizer<SupportMessages>>();
+builder.Services.AddScoped<ISupportCommandService, SupportCommandService>();
+builder.Services.AddScoped<ISupportQueryService, SupportQueryService>();
+// Dashboard Bounded Context
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+builder.Services.AddScoped<IDashboardQueryService, DashboardQueryService>();
 
+// Iam Bounded Context
+builder.Services.AddSingleton<IStringLocalizer<IamMessages>, StringLocalizer<IamMessages>>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserCommandService, UserCommandService>();
+builder.Services.AddScoped<IUserQueryService, UserQueryService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IHashingService, HashingService>();
+builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
+
+// TourManagement Acl facade (consumed by Profiles to authorize agency-staff reads)
+builder.Services.AddScoped<ITourManagementContextFacade, TourManagementContextFacade>();
+
+// Subscriptions Bounded Context
+// TODO: mock payment gateway for the demo — swap IPaymentGatewayService's implementation for a
+// real provider (Stripe, etc.) here when there's time/credentials; nothing else needs to change.
+builder.Services.Configure<PaymentGatewaySettings>(builder.Configuration.GetSection("Payments"));
+builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
+builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
+builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
+builder.Services.AddScoped<IPaymentGatewayService, MockPaymentGatewayService>();
+
+// Profiles Bounded Context
+builder.Services.AddSingleton<IStringLocalizer<ProfilesMessages>, StringLocalizer<ProfilesMessages>>();
+builder.Services.AddScoped<ITouristProfileRepository, TouristProfileRepository>();
+builder.Services.AddScoped<ITouristPreferencesRepository, TouristPreferencesRepository>();
+builder.Services.AddScoped<IStaffProfileRepository, StaffProfileRepository>();
+builder.Services.AddScoped<IStaffPreferencesRepository, StaffPreferencesRepository>();
+builder.Services.AddScoped<IMedicalDataAccessLogRepository, MedicalDataAccessLogRepository>();
+builder.Services.AddScoped<ITouristProfileCommandService, TouristProfileCommandService>();
+builder.Services.AddScoped<ITouristProfileQueryService, TouristProfileQueryService>();
+builder.Services.AddScoped<ITouristPreferencesCommandService, TouristPreferencesCommandService>();
+builder.Services.AddScoped<ITouristPreferencesQueryService, TouristPreferencesQueryService>();
+builder.Services.AddScoped<IStaffCommandService, StaffCommandService>();
+builder.Services.AddScoped<IStaffQueryService, StaffQueryService>();
+builder.Services.AddScoped<IProfilesContextFacade, ProfilesContextFacade>();
 
 builder.Services.AddScoped(typeof(ICommandPipelineBehavior<>), typeof(LoggingCommandBehavior<>));
 builder.Services.AddCortexMediator([typeof(Program)]);
@@ -227,6 +409,7 @@ app.UseCors("AllowAllPolicy");
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

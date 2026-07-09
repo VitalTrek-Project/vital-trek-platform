@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Localization;
 using NexumDevs.VitalTrek.Platform.TourManagement.Application.CommandServices;
@@ -116,6 +117,7 @@ public class ToursController : ControllerBase
     /// The specified tour was not found.
     /// </response>
     [HttpGet("{tourId:guid}")]
+    [AllowAnonymous]
     public async Task<IActionResult> GetTourById(
         Guid tourId,
         CancellationToken cancellationToken)
@@ -136,10 +138,16 @@ public class ToursController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all tours associated with a specific agency.
+    /// Retrieves tours from the collection, optionally filtered by agency or a search term.
+    /// Replaces the old separate <c>agency/{agencyId}</c> and <c>search</c> action-like routes
+    /// with query parameters on the single collection URI, per REST resource-naming conventions.
     /// </summary>
     /// <param name="agencyId">
-    /// The unique identifier of the agency.
+    /// When provided, restricts the results to tours belonging to this agency.
+    /// </param>
+    /// <param name="term">
+    /// When provided (and <paramref name="agencyId"/> is not), restricts the results to tours
+    /// whose title or description contain this term. Omitting both returns every tour.
     /// </param>
     /// <param name="cancellationToken">
     /// A token used to cancel the operation.
@@ -150,44 +158,16 @@ public class ToursController : ControllerBase
     /// <response code="200">
     /// The tours were successfully retrieved.
     /// </response>
-    [HttpGet("agency/{agencyId:guid}")]
-    public async Task<IActionResult> GetAllToursByAgency(
-        Guid agencyId,
+    [HttpGet]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetTours(
+        [FromQuery] Guid? agencyId,
+        [FromQuery] string? term,
         CancellationToken cancellationToken)
     {
-        var tours = await _tourQueryService.Handle(
-            new GetAllToursByAgencyQuery(agencyId),
-            cancellationToken);
-
-        var resources = tours.Select(
-            TourResourceFromEntityAssembler.ToResourceFromEntity);
-
-        return Ok(resources);
-    }
-
-    /// <summary>
-    /// Searches for tours that match the specified search term.
-    /// </summary>
-    /// <param name="term">
-    /// The search term used to find matching tours.
-    /// </param>
-    /// <param name="cancellationToken">
-    /// A token used to cancel the operation.
-    /// </param>
-    /// <returns>
-    /// A collection of matching <see cref="TourResource"/> objects.
-    /// </returns>
-    /// <response code="200">
-    /// The search was completed successfully.
-    /// </response>
-    [HttpGet("search")]
-    public async Task<IActionResult> SearchTours(
-        [FromQuery] string term,
-        CancellationToken cancellationToken)
-    {
-        var tours = await _tourQueryService.Handle(
-            new SearchToursQuery(term),
-            cancellationToken);
+        var tours = agencyId is { } id
+            ? await _tourQueryService.Handle(new GetAllToursByAgencyQuery(id), cancellationToken)
+            : await _tourQueryService.Handle(new SearchToursQuery(term ?? string.Empty), cancellationToken);
 
         var resources = tours.Select(
             TourResourceFromEntityAssembler.ToResourceFromEntity);
@@ -281,7 +261,8 @@ public class ToursController : ControllerBase
     }
 
     /// <summary>
-    /// Creates a duplicate of an existing tour.
+    /// Creates a copy of an existing tour. Modeled as POSTing a new element into the tour's
+    /// "copies" sub-collection (a noun) rather than a verb-suffixed <c>/duplicate</c> action.
     /// </summary>
     /// <param name="tourId">
     /// The unique identifier of the tour to duplicate.
@@ -298,7 +279,7 @@ public class ToursController : ControllerBase
     /// <response code="404">
     /// The specified tour was not found.
     /// </response>
-    [HttpPost("{tourId:guid}/duplicate")]
+    [HttpPost("{tourId:guid}/copies")]
     public async Task<IActionResult> DuplicateTour(
         Guid tourId,
         CancellationToken cancellationToken)

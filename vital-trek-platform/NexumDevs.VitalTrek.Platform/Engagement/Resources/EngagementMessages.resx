@@ -3,10 +3,70 @@
   <data name="InvalidPoints" xml:space="preserve">
     <value>Points must be greater than zero.</value>
   </data>
-  <data name="ExpeditionAlreadyAwarded" xml:space="preserve">
-    <value>This expedition has already been awarded to this profile.</value>
+  <data name="DuplicateTransaction" xml:space="preserve">
+    <value>A points transaction for this source has already been recorded.</value>
   </data>
   <data name="ProfileNotFound" xml:space="preserve">
     <value>The requested gamification profile was not found.</value>
+  </data>
+  <data name="ProgramNotFound" xml:space="preserve">
+    <value>The loyalty program for this agency was not found.</value>
+  </data>
+  <data name="InvalidProgramConfiguration" xml:space="preserve">
+    <value>The loyalty program configuration is invalid.</value>
+  </data>
+  <data name="TierNotFound" xml:space="preserve">
+    <value>The requested loyalty tier was not found.</value>
+  </data>
+  <data name="InvalidTierConfiguration" xml:space="preserve">
+    <value>The tier configuration is invalid.</value>
+  </data>
+  <data name="RewardNotFound" xml:space="preserve">
+    <value>The requested reward was not found.</value>
+  </data>
+  <data name="RewardInactive" xml:space="preserve">
+    <value>This reward is not currently active.</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>This reward is out of stock.</value>
+  </data>
+  <data name="InsufficientBalance" xml:space="preserve">
+    <value>The tourist does not have enough points for this redemption.</value>
+  </data>
+  <data name="RedemptionNotFound" xml:space="preserve">
+    <value>The requested redemption was not found.</value>
+  </data>
+  <data name="RedemptionAlreadyProcessed" xml:space="preserve">
+    <value>This redemption has already been used or has expired.</value>
+  </data>
+  <data name="ReferralCodeNotFound" xml:space="preserve">
+    <value>The referral code was not found.</value>
+  </data>
+  <data name="SelfReferralNotAllowed" xml:space="preserve">
+    <value>A tourist cannot redeem their own referral code.</value>
+  </data>
+  <data name="ReferralAlreadyUsed" xml:space="preserve">
+    <value>This referral has already been redeemed.</value>
+  </data>
+  <data name="BadgeDefinitionNotFound" xml:space="preserve">
+    <value>The requested badge definition was not found.</value>
+  </data>
+  <data name="DuplicateBadgeCode" xml:space="preserve">
+    <value>A badge definition with this code already exists.</value>
+  </data>
+  <data name="InvalidReview" xml:space="preserve">
+    <value>The review rating must be between 1 and 5.</value>
+  </data>
+  <data name="DuplicateReview" xml:space="preserve">
+    <value>This expedition has already been reviewed by this tourist.</value>
+  </data>
+  <data name="NotificationNotFound" xml:space="preserve">
+    <value>The requested notification was not found.</value>
+  </data>
+  <data name="InvalidEventType" xml:space="preserve">
+    <value>The points event type is not recognized.</value>
+  </data>
+  <data name="ConcurrentModification" xml:space="preserve">
+    <value>This was modified by another request at the same time. Please try again.</value>
   </data>
 </root>

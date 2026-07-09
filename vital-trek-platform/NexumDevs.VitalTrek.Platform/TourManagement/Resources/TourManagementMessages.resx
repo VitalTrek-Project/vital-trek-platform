@@ -9,6 +9,9 @@
     <data name="InvalidTourCapacity" xml:space="preserve">
     <value>The tour capacity must be greater than zero.</value>
   </data>
+    <data name="InvalidDifficulty" xml:space="preserve">
+    <value>The tour difficulty is not valid. Expected one of: Easy, Moderate, Hard, Expert.</value>
+  </data>
     <data name="TourCannotBeUpdated" xml:space="preserve">
     <value>A cancelled tour cannot be updated.</value>
   </data>

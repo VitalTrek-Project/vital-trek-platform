@@ -93,4 +93,19 @@ public class TourAssignment
         Status = EAssignmentStatus.Cancelled;
         return this;
     }
+
+    /// <summary>
+    /// Reactivates a previously cancelled assignment, back to pending. Used when a tourist who
+    /// unassigned from a tour is assigned to it again — reuses this row (instead of inserting a
+    /// new one) so the (TourId, TouristId) unique index isn't violated by a second row for the
+    /// same pair.
+    /// </summary>
+    /// <returns>The current <see cref="TourAssignment"/> instance.</returns>
+    public TourAssignment Reactivate()
+    {
+        Status = EAssignmentStatus.Pending;
+        ConfirmedAt = null;
+        AssignedAt = DateTimeOffset.UtcNow;
+        return this;
+    }
 }

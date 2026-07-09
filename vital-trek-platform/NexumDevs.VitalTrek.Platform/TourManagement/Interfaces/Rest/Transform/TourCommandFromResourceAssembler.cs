@@ -1,4 +1,6 @@
-﻿using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Commands;
+﻿using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model;
+using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Commands;
+using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Errors;
 using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.ValueObjects;
 using NexumDevs.VitalTrek.Platform.TourManagement.Interfaces.Rest.Resources;
 
@@ -8,7 +10,10 @@ public static class TourCommandFromResourceAssembler
 {
     public static CreateTourCommand ToCreateCommandFromResource(CreateTourResource resource)
     {
-        var difficulty = Enum.Parse<EDifficultyLevel>(resource.Difficulty, ignoreCase: true);
+        if (!Enum.TryParse<EDifficultyLevel>(resource.Difficulty, ignoreCase: true, out var difficulty))
+            throw new TourManagementError(
+                TourManagementErrors.InvalidDifficulty,
+                $"'{resource.Difficulty}' is not a valid difficulty. Expected one of: Easy, Moderate, Hard, Expert.");
 
         return new CreateTourCommand(
             resource.AgencyId,

@@ -2,6 +2,7 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using NexumDevs.VitalTrek.Platform.Iot.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Iot.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Iot.Domain.Model;
 using NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Commands;
 using NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Queries;
 using NexumDevs.VitalTrek.Platform.Iot.Interfaces.Rest.Resources;
@@ -40,7 +41,11 @@ public class SensorReadingsController(
         var result = await sensorReadingCommandService.Handle(command, cancellationToken);
         if (result.IsFailure)
         {
-            return _problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status400BadRequest, result.Error, result.Message);
+            var statusCode = (IotError)result.Error! == IotError.DeviceNotFound
+                ? StatusCodes.Status404NotFound
+                : StatusCodes.Status400BadRequest;
+
+            return _problemDetailsFactory.CreateProblemDetails(this, statusCode, result.Error, result.Message);
         }
         var readingResource = SensorReadingResourceFromEntityAssembler.ToResourceFromEntity(result.Value!);
         return CreatedAtAction(nameof(GetSensorReadingsByDevice), new { deviceId = readingResource.DeviceId }, readingResource);
@@ -61,7 +66,7 @@ public class SensorReadingsController(
         return Ok(resources);
     }
 
-    [HttpGet("device/{deviceId:int}")]
+    [HttpGet("/api/v1/devices/{deviceId:int}/sensor-readings")]
     [SwaggerOperation(
         Summary = "Get sensor readings by device",
         Description = "Get all sensor readings for a specific IoT device",

@@ -11,6 +11,14 @@ using NexumDevs.VitalTrek.Platform.Navigation.Domain.Model.Entities;
 using NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Aggregate;
 using NexumDevs.VitalTrek.Platform.Iot.Domain.Model.Entities;
 using NexumDevs.VitalTrek.Platform.Iot.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using NexumDevs.VitalTrek.Platform.Support.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using NexumDevs.VitalTrek.Platform.Iam.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using NexumDevs.VitalTrek.Platform.Profiles.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Aggregates;
+using NexumDevs.VitalTrek.Platform.TourManagement.Domain.Model.Entities;
+using NexumDevs.VitalTrek.Platform.TourManagement.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.Aggregates;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Persistence.EntityFrameworkCore.Configuration.Extensions;
 
 namespace NexumDevs.VitalTrek.Platform.Shared.Infrastructure.Persistence.EntityFrameworkCore.Configuration;
 
@@ -126,9 +134,17 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
 
         builder.ApplyEngagementConfiguration();
         builder.ApplyIoTConfiguration();
+        builder.ApplySupportConfiguration();
+        builder.ApplyIamConfiguration();
+        builder.ApplyProfilesConfiguration();
+        builder.ApplyTourManagementConfiguration();
+        builder.ApplySubscriptionsConfiguration();
     }
-    
+
     public DbSet<BinnacleReading> BinnacleReadings { get; set; }
     public DbSet<IoTDevice> IoTDevices { get; set; }
     public DbSet<SensorReading> SensorReadings { get; set; }
+    public DbSet<Tour> Tours { get; set; }
+    public DbSet<TourAssignment> TourAssignments { get; set; }
+    public DbSet<Subscription> Subscriptions { get; set; }
 }

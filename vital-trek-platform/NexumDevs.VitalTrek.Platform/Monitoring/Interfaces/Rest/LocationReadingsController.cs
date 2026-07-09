@@ -37,15 +37,17 @@ public class LocationReadingsController(
     public async Task<IActionResult> RecordLocationReading([FromBody] RecordLocationCommand command, CancellationToken cancellationToken)
     {
         var result = await locationReadingCommandService.Handle(command, cancellationToken);
-        if (result.IsFailure)
-        {
-            return _problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status400BadRequest, result.Error, result.Message);
-        }
-        var resource = LocationReadingResourceFromEntityAssembler.ToResourceFromEntity(result.Value!);
-        return CreatedAtAction(nameof(GetLocationReadingsByExpedition), new { expeditionId = resource.ExpeditionId }, resource);
+
+        return MonitoringActionResultAssembler.ToActionResultFromResult(
+            this, result, _problemDetailsFactory,
+            reading =>
+            {
+                var resource = LocationReadingResourceFromEntityAssembler.ToResourceFromEntity(reading);
+                return CreatedAtAction(nameof(GetLocationReadingsByExpedition), new { expeditionId = resource.ExpeditionId }, resource);
+            });
     }
 
-    [HttpGet("expedition/{expeditionId:int}")]
+    [HttpGet("/api/v1/expeditions/{expeditionId:int}/location-readings")]
     [SwaggerOperation(
         Summary = "Get location readings by expedition",
         Description = "Get all location readings for a specific expedition",

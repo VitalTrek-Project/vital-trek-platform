@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="TicketNotFound" xml:space="preserve">
+    <value>The requested support ticket was not found.</value>
+  </data>
+  <data name="InvalidUserMode" xml:space="preserve">
+    <value>The user mode must be one of: Tourist, Guide, Support.</value>
+  </data>
+  <data name="InvalidAuthorMode" xml:space="preserve">
+    <value>The author mode must be one of: Tourist, Guide, Support.</value>
+  </data>
+  <data name="InvalidPriority" xml:space="preserve">
+    <value>The priority must be one of: Low, Medium, High, Urgent.</value>
+  </data>
+  <data name="InvalidStatus" xml:space="preserve">
+    <value>The status must be one of: Open, InProgress, Resolved, Closed.</value>
+  </data>
+  <data name="InvalidTicketData" xml:space="preserve">
+    <value>Full name, email, subject and description are required.</value>
+  </data>
+  <data name="EmptyReplyMessage" xml:space="preserve">
+    <value>The reply message cannot be empty.</value>
+  </data>
+  <data name="NoUpdateFieldsProvided" xml:space="preserve">
+    <value>At least one of status or priority must be provided.</value>
+  </data>
+</root>

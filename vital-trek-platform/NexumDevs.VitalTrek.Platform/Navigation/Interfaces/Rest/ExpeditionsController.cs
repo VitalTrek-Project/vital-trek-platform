@@ -1,4 +1,5 @@
 ﻿using System.Net.Mime;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using NexumDevs.VitalTrek.Platform.Navigation.Application.CommandServices;
@@ -26,6 +27,7 @@ public class ExpeditionsController(
     private readonly ProblemDetailsFactory _problemDetailsFactory = problemDetailsFactory;
     
     [HttpGet("{expeditionId:int}")]
+    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Get an expedition by its id",
         Description = "Get an expedition by its id",
@@ -70,6 +72,7 @@ public class ExpeditionsController(
     }
 
     [HttpGet]
+    [AllowAnonymous]
     [SwaggerOperation(
         Summary = "Get all expeditions",
         Description = "Get all expeditions",

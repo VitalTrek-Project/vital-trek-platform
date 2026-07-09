@@ -14,6 +14,7 @@ namespace NexumDevs.VitalTrek.Platform.Iot.Application.Internal.CommandServices;
 
 public class SensorReadingCommandService(
     ISensorReadingRepository readingRepository,
+    IIoTDeviceRepository deviceRepository,
     IUnitOfWork unitOfWork,
     IStringLocalizer<ErrorMessages> localizer)
     : ISensorReadingCommandService
@@ -26,6 +27,13 @@ public class SensorReadingCommandService(
         if (sensorType is null)
             return Result<SensorReading>.Failure(IotError.InvalidSensorType,
                 $"Invalid sensor type. Received: '{command.Type}'");
+
+        // Previously unchecked: a reading for a nonexistent device only failed via the DB's FK
+        // constraint, surfacing as a generic DatabaseError/400 instead of a clean 404.
+        var device = await deviceRepository.FindByIdAsync(command.DeviceId, cancellationToken);
+        if (device is null)
+            return Result<SensorReading>.Failure(IotError.DeviceNotFound,
+                $"No device found with id '{command.DeviceId}'.");
 
         try
         {

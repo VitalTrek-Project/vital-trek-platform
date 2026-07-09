@@ -2,11 +2,13 @@ using System.Net.Mime;
 using Microsoft.AspNetCore.Mvc;
 using NexumDevs.VitalTrek.Platform.Monitoring.Application.CommandServices;
 using NexumDevs.VitalTrek.Platform.Monitoring.Application.QueryServices;
+using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Model.Aggregate;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Model.Commands;
 using NexumDevs.VitalTrek.Platform.Monitoring.Domain.Model.Queries;
 using NexumDevs.VitalTrek.Platform.Monitoring.Interfaces.Rest.Resources;
 using NexumDevs.VitalTrek.Platform.Monitoring.Interfaces.Rest.Transform;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
+using NexumDevs.VitalTrek.Platform.Shared.Application.Model;
 using NexumDevs.VitalTrek.Platform.Shared.Interfaces.Rest.ProblemDetails;
 using Microsoft.Extensions.Localization;
 using Swashbuckle.AspNetCore.Annotations;
@@ -38,15 +40,17 @@ public class AlertsController(
     {
         var command = new RaiseAlertCommand(resource.ExpeditionId, resource.TouristId, resource.Type, resource.Severity, resource.Message);
         var result = await alertCommandService.Handle(command, cancellationToken);
-        if (result.IsFailure)
-        {
-            return _problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status400BadRequest, result.Error, result.Message);
-        }
-        var alertResource = AlertResourceFromEntityAssembler.ToResourceFromEntity(result.Value!);
-        return CreatedAtAction(nameof(GetActiveAlertsByExpedition), new { expeditionId = alertResource.Id }, alertResource);
+
+        return MonitoringActionResultAssembler.ToActionResultFromResult(
+            this, result, _problemDetailsFactory,
+            alert =>
+            {
+                var alertResource = AlertResourceFromEntityAssembler.ToResourceFromEntity(alert);
+                return CreatedAtAction(nameof(GetActiveAlertsByExpedition), new { expeditionId = alertResource.Id }, alertResource);
+            });
     }
 
-    [HttpGet("expedition/{expeditionId:int}")]
+    [HttpGet("/api/v1/expeditions/{expeditionId:int}/alerts")]
     [SwaggerOperation(
         Summary = "Get active alerts by expedition",
         Description = "Get all active alerts for a specific expedition",
@@ -60,41 +64,42 @@ public class AlertsController(
         return Ok(alertResources);
     }
 
-    [HttpPut("{alertId:int}/acknowledge")]
+    /// <summary>
+    /// Updates an alert's status. Replaces the old PUT .../acknowledge and PUT .../dismiss
+    /// action-suffixed routes with a single state-change PATCH on the alert resource itself.
+    /// </summary>
+    [HttpPatch("{alertId:int}")]
     [SwaggerOperation(
-        Summary = "Acknowledge an alert",
-        Description = "Acknowledge an active alert",
-        OperationId = "AcknowledgeAlert")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The alert was acknowledged", typeof(AlertResource))]
+        Summary = "Update an alert's status",
+        Description = "Set an alert's status to ACKNOWLEDGED (requires userId) or DISMISSED",
+        OperationId = "UpdateAlertStatus")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The alert was updated", typeof(AlertResource))]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid status or missing userId for ACKNOWLEDGED")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "The alert was not found")]
-    public async Task<IActionResult> AcknowledgeAlert([FromRoute] int alertId, [FromQuery] int userId, CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateAlertStatus(
+        [FromRoute] int alertId, [FromBody] UpdateAlertStatusResource resource, CancellationToken cancellationToken)
     {
-        var command = new AcknowledgeAlertCommand(alertId, userId);
-        var result = await alertCommandService.Handle(command, cancellationToken);
-        if (result.IsFailure)
+        Result<Alert> result;
+        switch (resource.Status.ToUpperInvariant())
         {
-            return _problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status404NotFound, result.Error, result.Message);
+            case "ACKNOWLEDGED":
+                if (resource.UserId is not { } userId)
+                    return _problemDetailsFactory.CreateProblemDetails(
+                        this, StatusCodes.Status400BadRequest, (Enum?)null,
+                        "userId is required when setting status to ACKNOWLEDGED.");
+                result = await alertCommandService.Handle(new AcknowledgeAlertCommand(alertId, userId), cancellationToken);
+                break;
+            case "DISMISSED":
+                result = await alertCommandService.Handle(new DismissAlertCommand(alertId), cancellationToken);
+                break;
+            default:
+                return _problemDetailsFactory.CreateProblemDetails(
+                    this, StatusCodes.Status400BadRequest, (Enum?)null,
+                    $"'{resource.Status}' is not a valid status. Expected 'ACKNOWLEDGED' or 'DISMISSED'.");
         }
-        var alertResource = AlertResourceFromEntityAssembler.ToResourceFromEntity(result.Value!);
-        return Ok(alertResource);
-    }
 
-    [HttpPut("{alertId:int}/dismiss")]
-    [SwaggerOperation(
-        Summary = "Dismiss an alert",
-        Description = "Dismiss an active or acknowledged alert",
-        OperationId = "DismissAlert")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The alert was dismissed", typeof(AlertResource))]
-    [SwaggerResponse(StatusCodes.Status404NotFound, "The alert was not found")]
-    public async Task<IActionResult> DismissAlert([FromRoute] int alertId, CancellationToken cancellationToken)
-    {
-        var command = new DismissAlertCommand(alertId);
-        var result = await alertCommandService.Handle(command, cancellationToken);
-        if (result.IsFailure)
-        {
-            return _problemDetailsFactory.CreateProblemDetails(this, StatusCodes.Status404NotFound, result.Error, result.Message);
-        }
-        var alertResource = AlertResourceFromEntityAssembler.ToResourceFromEntity(result.Value!);
-        return Ok(alertResource);
+        return MonitoringActionResultAssembler.ToActionResultFromResult(
+            this, result, _problemDetailsFactory,
+            alert => Ok(AlertResourceFromEntityAssembler.ToResourceFromEntity(alert)));
     }
 }

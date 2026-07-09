@@ -15,9 +15,8 @@ public static class MonitoringActionResultAssembler
     {
         return error switch
         {
-           
             MonitoringError.IncidentNotFound => StatusCodes.Status404NotFound,
-           
+            MonitoringError.AlertNotFound => StatusCodes.Status404NotFound,
             MonitoringError.OperationCancelled => StatusCodes.Status409Conflict,
             MonitoringError.DatabaseError => StatusCodes.Status500InternalServerError,
             MonitoringError.InternalServerError => StatusCodes.Status500InternalServerError,
@@ -26,6 +25,23 @@ public static class MonitoringActionResultAssembler
     }
 
     // --- Specific Assembler Methods ---
+
+    /// <summary>
+    /// Generic assembler for any <see cref="Result{T}" /> carrying a <see cref="MonitoringError" />
+    /// — maps the actual failure reason to its status code instead of a hardcoded one. Used by
+    /// AlertsController, LocationReadingsController and VitalSignReadingsController.
+    /// </summary>
+    public static IActionResult ToActionResultFromResult<T>(
+        ControllerBase controller,
+        Result<T> result,
+        ProblemDetailsFactory problemDetailsFactory,
+        Func<T, IActionResult> successAction)
+    {
+        if (result.IsSuccess) return successAction(result.Value!);
+
+        var statusCode = ToStatusCodeFromMonitoringError((MonitoringError)result.Error!);
+        return problemDetailsFactory.CreateProblemDetails(controller, statusCode, result.Error, result.Message);
+    }
 
   
 
