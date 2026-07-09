@@ -10,7 +10,7 @@ using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.Aggregates;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.Commands;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.ValueObjects;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Repositories;
-using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Stripe.Configuration;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Mock.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.CommandServices;
@@ -25,7 +25,7 @@ public class SubscriptionCommandService(
     ISubscriptionRepository subscriptionRepository,
     IPaymentGatewayService paymentGatewayService,
     IUnitOfWork unitOfWork,
-    IOptions<StripeSettings> stripeSettings,
+    IOptions<PaymentGatewaySettings> paymentSettings,
     IStringLocalizer<ErrorMessages> localizer)
     : ISubscriptionCommandService
 {
@@ -33,7 +33,12 @@ public class SubscriptionCommandService(
     {
         try
         {
-            var settings = stripeSettings.Value;
+            var existing = await subscriptionRepository.FindByUserIdAsync(command.UserId, cancellationToken);
+            if (existing?.Status == SubscriptionStatus.Active)
+                return Result<string>.Failure(SubscriptionsError.AlreadyActive,
+                    "This user already has an active subscription.");
+
+            var settings = paymentSettings.Value;
             var session = await paymentGatewayService.CreateCheckoutSessionAsync(
                 command.UserId, command.Plan, settings.SuccessUrl, settings.CancelUrl, cancellationToken);
 
@@ -60,7 +65,7 @@ public class SubscriptionCommandService(
         catch (Exception)
         {
             return Result<string>.Failure(SubscriptionsError.StripeError,
-                "Could not start the Stripe checkout session.");
+                "Could not start the checkout session.");
         }
     }
 
@@ -68,9 +73,20 @@ public class SubscriptionCommandService(
     {
         var subscription = await subscriptionRepository.FindByStripeSessionIdAsync(command.StripeCheckoutSessionId, cancellationToken);
         if (subscription is null)
-            return Result.Failure(SubscriptionsError.SubscriptionNotFound, "No subscription matches this Stripe session.");
+            return Result.Failure(SubscriptionsError.SubscriptionNotFound, "No subscription matches this checkout session.");
 
-        subscription.Activate(command.StripeSubscriptionId, command.StartDate, command.EndDate);
+        // Idempotency guard: a gateway (or its mock stand-in) can call this more than once for
+        // the same session (double-click, retried webhook). Only PendingPayment -> Active is a
+        // real transition; anything else is a no-op success rather than re-running Activate
+        // (which would reset dates) or silently downgrading an already-Active subscription.
+        if (subscription.Status != SubscriptionStatus.PendingPayment)
+            return Result.Success();
+
+        var endDate = subscription.Plan == SubscriptionPlan.Monthly
+            ? command.StartDate.AddMonths(1)
+            : command.StartDate.AddYears(1);
+
+        subscription.Activate(command.StripeSubscriptionId, command.StartDate, endDate);
         subscriptionRepository.Update(subscription);
         await unitOfWork.CompleteAsync(cancellationToken);
 
@@ -82,6 +98,11 @@ public class SubscriptionCommandService(
         var subscription = await subscriptionRepository.FindByStripeSessionIdAsync(command.StripeCheckoutSessionId, cancellationToken);
         if (subscription is null)
             return Result.Failure(SubscriptionsError.SubscriptionNotFound, "No subscription matches this Stripe session.");
+
+        // Same idempotency guard as Activate: never flip an already-Active (i.e. already paid)
+        // subscription to PaymentFailed just because a "canceled" outcome got replayed.
+        if (subscription.Status != SubscriptionStatus.PendingPayment)
+            return Result.Success();
 
         subscription.MarkPaymentFailed();
         subscriptionRepository.Update(subscription);

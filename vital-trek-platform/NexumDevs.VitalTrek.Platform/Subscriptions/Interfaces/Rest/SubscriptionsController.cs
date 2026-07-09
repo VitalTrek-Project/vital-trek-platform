@@ -3,14 +3,15 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Options;
 using NexumDevs.VitalTrek.Platform.Resources.Errors;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Application.CommandServices;
-using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.OutboundServices;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.Commands;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.Queries;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Model.ValueObjects;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Mock.Configuration;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Interfaces.Rest.Resources;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Interfaces.Rest.Transform;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,11 +20,13 @@ using ProblemDetailsFactory = NexumDevs.VitalTrek.Platform.Shared.Interfaces.Res
 namespace NexumDevs.VitalTrek.Platform.Subscriptions.Interfaces.Rest;
 
 /// <summary>
-/// Subscription + Stripe Checkout endpoints. Checkout, status and cancel require an
+/// Subscription + mock-payment-gateway endpoints. Checkout, status and cancel require an
 /// authenticated user (the subscribed user is always the caller from the JWT, never a path
-/// parameter). The webhook is the only public endpoint here — Stripe calls it directly and
-/// authenticates via the signed payload, not a session/JWT.
+/// parameter). The mock-checkout pages are the only public endpoints here — they stand in for
+/// a real gateway's hosted checkout page + webhook, so there is no session/JWT to check there.
 /// TODO: real production plans would validate role (e.g. Tourist-only) — skipped for the demo.
+/// TODO: swap the mock gateway for a real one (Stripe, etc.) via the Program.cs DI registration
+/// when there's time/credentials — IPaymentGatewayService callers here don't need to change.
 /// </summary>
 [ApiController]
 [Route("api/v1/subscriptions")]
@@ -32,7 +35,7 @@ namespace NexumDevs.VitalTrek.Platform.Subscriptions.Interfaces.Rest;
 public class SubscriptionsController(
     ISubscriptionCommandService commandService,
     ISubscriptionQueryService queryService,
-    IPaymentGatewayService paymentGatewayService,
+    IOptions<PaymentGatewaySettings> paymentSettings,
     IStringLocalizer<ErrorMessages> errorLocalizer,
     ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
@@ -76,13 +79,25 @@ public class SubscriptionsController(
         return Ok(SubscriptionResourceFromEntityAssembler.ToResourceFromEntity(subscription));
     }
 
-    [HttpPost("me/cancel")]
+    /// <summary>
+    /// Updates the current user's subscription. Replaces the old verb-suffixed
+    /// <c>POST me/cancel</c> action route with a state-change PATCH on the subscription
+    /// resource itself. Only Status "Canceled" is a supported transition today.
+    /// </summary>
+    [HttpPatch("me")]
     [Authorize]
-    [SwaggerOperation(Summary = "Cancel the current user's active subscription", OperationId = "CancelMySubscription")]
-    [SwaggerResponse(StatusCodes.Status204NoContent, "The subscription was canceled")]
+    [SwaggerOperation(Summary = "Update the current user's subscription (cancel it)", OperationId = "UpdateMySubscription")]
+    [SwaggerResponse(StatusCodes.Status204NoContent, "The subscription was updated")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid status")]
     [SwaggerResponse(StatusCodes.Status404NotFound, "No active subscription to cancel")]
-    public async Task<IActionResult> CancelMySubscription(CancellationToken cancellationToken)
+    public async Task<IActionResult> UpdateMySubscription(
+        [FromBody] UpdateSubscriptionResource resource, CancellationToken cancellationToken)
     {
+        if (!string.Equals(resource.Status, "Canceled", StringComparison.OrdinalIgnoreCase))
+            return problemDetailsFactory.CreateProblemDetails(
+                this, StatusCodes.Status400BadRequest, (Enum?)null,
+                $"'{resource.Status}' is not a supported status. Expected 'Canceled'.");
+
         var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var result = await commandService.Handle(new CancelSubscriptionCommand(userId), cancellationToken);
 
@@ -91,54 +106,75 @@ public class SubscriptionsController(
     }
 
     /// <summary>
-    /// Stripe webhook receiver. Public by design — Stripe has no session/JWT, it authenticates
-    /// via the "Stripe-Signature" header verified against Stripe:WebhookSecret.
+    /// Mock hosted checkout page — stands in for a real gateway's Checkout page (e.g. Stripe
+    /// Checkout). Public by design: this is the page the "customer" lands on after
+    /// <see cref="CreateCheckoutSession" /> returns its URL, before they have a session there.
+    /// TODO: delete this whole mock-checkout trio once a real gateway is wired in; a real
+    /// provider hosts its own page and calls our webhook instead.
     /// </summary>
-    [HttpPost("webhook")]
+    [HttpGet("mock-checkout/{sessionId}")]
     [AllowAnonymous]
-    [SwaggerOperation(Summary = "Stripe webhook receiver", OperationId = "StripeWebhook")]
-    [SwaggerResponse(StatusCodes.Status200OK, "The event was processed")]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid signature or payload")]
-    public async Task<IActionResult> StripeWebhook(CancellationToken cancellationToken)
+    [SwaggerOperation(Summary = "Mock hosted checkout page (stand-in for a real gateway)", OperationId = "MockCheckoutPage")]
+    public ContentResult MockCheckoutPage(string sessionId)
     {
-        using var reader = new StreamReader(Request.Body);
-        var payload = await reader.ReadToEndAsync(cancellationToken);
-        var signature = Request.Headers["Stripe-Signature"].ToString();
+        // Native <form> only supports GET/POST, so a PATCH here needs fetch() + JS redirect
+        // instead of a form submission — the endpoint itself stays a state-change PATCH.
+        var html = $$"""
+            <!doctype html>
+            <html lang="es"><head><meta charset="utf-8"><title>Simular pago</title></head>
+            <body style="font-family: sans-serif; max-width: 420px; margin: 60px auto; text-align:center;">
+              <h2>Pasarela de pago (simulada)</h2>
+              <p>Sesión: <code>{{sessionId}}</code></p>
+              <p style="color:#666;font-size:0.9em;">TODO: reemplazar por un gateway real (Stripe u otro) cuando haya cuenta/credenciales.</p>
+              <button onclick="settle('paid')" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:6px;cursor:pointer;">Pagar</button>
+              <button onclick="settle('canceled')" style="padding:10px 20px;background:#dc2626;color:#fff;border:none;border-radius:6px;cursor:pointer;margin-left:8px">Cancelar</button>
+              <script>
+                async function settle(outcome) {
+                  const res = await fetch('/api/v1/subscriptions/mock-checkout/{{sessionId}}', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ outcome })
+                  });
+                  const data = await res.json();
+                  if (data.redirectUrl) window.location.href = data.redirectUrl;
+                }
+              </script>
+            </body></html>
+            """;
+        return Content(html, "text/html");
+    }
 
-        PaymentWebhookEvent stripeEvent;
-        try
+    /// <summary>
+    /// Settles a mock checkout session — the mock stand-in for a real gateway's webhook event.
+    /// Outcome "paid" activates the subscription; "canceled" marks the payment failed.
+    /// </summary>
+    [HttpPatch("mock-checkout/{sessionId}")]
+    [AllowAnonymous]
+    [SwaggerOperation(Summary = "Settle a mock checkout session (paid or canceled)", OperationId = "SettleMockCheckout")]
+    [SwaggerResponse(StatusCodes.Status200OK, "The session was settled; body has redirectUrl")]
+    [SwaggerResponse(StatusCodes.Status400BadRequest, "Invalid outcome")]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "No subscription matches this session")]
+    public async Task<IActionResult> SettleMockCheckout(
+        string sessionId, [FromBody] UpdateMockCheckoutResource resource, CancellationToken cancellationToken)
+    {
+        switch (resource.Outcome.ToLowerInvariant())
         {
-            stripeEvent = paymentGatewayService.ParseWebhookEvent(payload, signature);
-        }
-        catch (PaymentGatewayNotConfiguredException ex)
-        {
-            return problemDetailsFactory.CreateProblemDetails(
-                this, StatusCodes.Status503ServiceUnavailable, SubscriptionsError.StripeNotConfigured, ex.Message);
-        }
-        catch (Exception)
-        {
-            return problemDetailsFactory.CreateProblemDetails(
-                this, StatusCodes.Status400BadRequest, SubscriptionsError.StripeError, "Invalid Stripe webhook signature or payload.");
-        }
-
-        switch (stripeEvent.Type)
-        {
-            case "checkout.session.completed" when stripeEvent.CheckoutSessionId is not null:
-                var start = DateTimeOffset.UtcNow;
-                // TODO: derive the real plan-based end date from the Subscription's Plan once fetched;
-                // Stripe's own subscription renewal is the source of truth, this is only a local mirror.
-                await commandService.Handle(
-                    new ActivateSubscriptionCommand(stripeEvent.CheckoutSessionId, stripeEvent.StripeSubscriptionId, start, start.AddMonths(1)),
+            case "paid":
+                var activateResult = await commandService.Handle(
+                    new ActivateSubscriptionCommand(sessionId, $"mock_sub_{Guid.NewGuid():N}", DateTimeOffset.UtcNow),
                     cancellationToken);
-                break;
-            // TODO: only covers a failure tied to the original checkout session; a failure on a
-            // later renewal cycle carries a subscription id, not a checkout session id, and needs
-            // a FindByStripeSubscriptionIdAsync lookup we haven't built yet — out of scope for today.
-            case "invoice.payment_failed" when stripeEvent.CheckoutSessionId is not null:
-                await commandService.Handle(new MarkPaymentFailedCommand(stripeEvent.CheckoutSessionId), cancellationToken);
-                break;
+                return SubscriptionsActionResultAssembler.ToActionResultFromResult(
+                    this, activateResult, errorLocalizer, problemDetailsFactory,
+                    () => Ok(new { redirectUrl = paymentSettings.Value.SuccessUrl }));
+            case "canceled":
+                var failResult = await commandService.Handle(new MarkPaymentFailedCommand(sessionId), cancellationToken);
+                return SubscriptionsActionResultAssembler.ToActionResultFromResult(
+                    this, failResult, errorLocalizer, problemDetailsFactory,
+                    () => Ok(new { redirectUrl = paymentSettings.Value.CancelUrl }));
+            default:
+                return problemDetailsFactory.CreateProblemDetails(
+                    this, StatusCodes.Status400BadRequest, (Enum?)null,
+                    $"'{resource.Outcome}' is not a valid outcome. Expected 'paid' or 'canceled'.");
         }
-
-        return Ok();
     }
 }
