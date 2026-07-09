@@ -97,8 +97,8 @@ using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.OutboundSe
 using NexumDevs.VitalTrek.Platform.Subscriptions.Application.Internal.QueryServices;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Application.QueryServices;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Domain.Repositories;
-using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Stripe.Configuration;
-using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Stripe.Services;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Mock.Configuration;
+using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Payments.Mock.Services;
 using NexumDevs.VitalTrek.Platform.Subscriptions.Infrastructure.Persistence.EntityFrameworkCore.Repositories;
 
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -111,6 +111,7 @@ using ProblemDetailsFactory = NexumDevs.VitalTrek.Platform.Shared.Interfaces.Res
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddControllers(options =>
     {
@@ -355,11 +356,13 @@ builder.Services.AddScoped<IIamContextFacade, IamContextFacade>();
 builder.Services.AddScoped<ITourManagementContextFacade, TourManagementContextFacade>();
 
 // Subscriptions Bounded Context
-builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+// TODO: mock payment gateway for the demo — swap IPaymentGatewayService's implementation for a
+// real provider (Stripe, etc.) here when there's time/credentials; nothing else needs to change.
+builder.Services.Configure<PaymentGatewaySettings>(builder.Configuration.GetSection("Payments"));
 builder.Services.AddScoped<ISubscriptionRepository, SubscriptionRepository>();
 builder.Services.AddScoped<ISubscriptionCommandService, SubscriptionCommandService>();
 builder.Services.AddScoped<ISubscriptionQueryService, SubscriptionQueryService>();
-builder.Services.AddScoped<IPaymentGatewayService, StripePaymentGatewayService>();
+builder.Services.AddScoped<IPaymentGatewayService, MockPaymentGatewayService>();
 
 // Profiles Bounded Context
 builder.Services.AddSingleton<IStringLocalizer<ProfilesMessages>, StringLocalizer<ProfilesMessages>>();

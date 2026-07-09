@@ -14,10 +14,10 @@ namespace NexumDevs.VitalTrek.Platform.Dashboard.Interfaces.Rest;
 
 /// <summary>
 /// Read-only analytics endpoints for the agency-admin dashboard and the tourist dashboard.
-/// Resources are nested hierarchically (e.g. admin/alerts/distribution, admin/expeditions/active)
-/// rather than hyphen-joined, and collections are addressed with plural nouns (tourists/{id}),
-/// matching the rest of the API (AlertsController -&gt; /alerts, ExpeditionsController -&gt; /expeditions).
-/// The admin/* endpoints are not yet scoped per-agency (there is no AgencyId on the underlying
+/// Resources are nested hierarchically under nouns (e.g. alerts/distribution,
+/// expeditions/active) — no "admin" path segment, since that describes an audience, not a
+/// resource; the [Authorize(Roles=Agency)] attribute already scopes access.
+/// These endpoints are not yet scoped per-agency (there is no AgencyId on the underlying
 /// Alert/Expedition data), so they are restricted to the Agency role as a whole rather than to a
 /// single agency's data — narrowing that further requires adding AgencyId to those aggregates.
 /// </summary>
@@ -28,7 +28,7 @@ namespace NexumDevs.VitalTrek.Platform.Dashboard.Interfaces.Rest;
 public class DashboardController(IDashboardQueryService dashboardQueryService, ProblemDetailsFactory problemDetailsFactory) : ControllerBase
 {
     [Authorize(Roles = nameof(UserRole.Agency))]
-    [HttpGet("admin/summary")]
+    [HttpGet("summary")]
     [SwaggerOperation(
         Summary = "Get admin dashboard KPI summary",
         Description = "KPIs for expeditions, alerts, active tourists and staff, each compared against the previous period of equal length",
@@ -48,7 +48,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
     }
 
     [Authorize(Roles = nameof(UserRole.Agency))]
-    [HttpGet("admin/alerts/distribution")]
+    [HttpGet("alerts/distribution")]
     [SwaggerOperation(
         Summary = "Get alerts distribution",
         Description = "Alert counts grouped by severity and by type within the given period",
@@ -68,7 +68,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
     }
 
     [Authorize(Roles = nameof(UserRole.Agency))]
-    [HttpGet("admin/alerts/attention")]
+    [HttpGet("alerts/pending")]
     [SwaggerOperation(
         Summary = "Get alerts requiring attention",
         Description = "Active (unacknowledged) alerts ordered by severity then age",
@@ -84,7 +84,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
     }
 
     [Authorize(Roles = nameof(UserRole.Agency))]
-    [HttpGet("admin/expeditions/timeseries")]
+    [HttpGet("expeditions/timeseries")]
     [SwaggerOperation(
         Summary = "Get expeditions time series",
         Description = "Number of expeditions created per week or month within the given period",
@@ -105,7 +105,7 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
     }
 
     [Authorize(Roles = nameof(UserRole.Agency))]
-    [HttpGet("admin/expeditions/active")]
+    [HttpGet("expeditions/active")]
     [SwaggerOperation(
         Summary = "Get expeditions in progress",
         Description = "Expeditions currently in progress, with their tourist count",
@@ -117,6 +117,12 @@ public class DashboardController(IDashboardQueryService dashboardQueryService, P
         return Ok(expeditions.Select(DashboardResourceAssembler.ToResourceFromActivitySummary));
     }
 
+    // TODO: touristId is an int from Monitoring/Navigation's own tourist ID scheme, with no
+    // bridge to the Iam Guid user id carried in the JWT — so unlike the admin/* endpoints above,
+    // this can't verify the caller actually IS that tourist (same known gap as the loyalty
+    // ProgramController/ProfileController). [Authorize] at least requires *some* valid session;
+    // it does not yet stop one tourist from reading another tourist's dashboard by touristId.
+    [Authorize]
     [HttpGet("tourists/{touristId:int}/summary")]
     [SwaggerOperation(
         Summary = "Get tourist dashboard",

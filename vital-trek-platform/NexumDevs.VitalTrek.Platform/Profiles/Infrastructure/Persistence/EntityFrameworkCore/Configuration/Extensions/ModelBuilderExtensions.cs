@@ -48,6 +48,11 @@ public static class ModelBuilderExtensions
             entity.ToTable("EmergencyContacts");
 
             entity.HasKey(c => c.Id);
+            // Client-generated Guid, added into an already-tracked TouristProfile's
+            // EmergencyContacts collection — without this, EF's default Guid-key convention can
+            // emit an UPDATE instead of an INSERT for a brand-new contact (same bug found and
+            // fixed for Support's TicketReply.Id and TourManagement's Checkpoint/TourAssignment.Id).
+            entity.Property(c => c.Id).ValueGeneratedNever();
             entity.HasIndex(c => c.TouristProfileId);
 
             entity.Property(c => c.Name).IsRequired().HasMaxLength(200);
